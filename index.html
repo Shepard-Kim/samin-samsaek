@@ -152,9 +152,9 @@ button,input,textarea{font:inherit;color:inherit}
 .paid button b{color:var(--ink);font-family:var(--f-disp);font-weight:400;font-size:15px}
 .paid s{color:var(--ink-soft)}
 .beta{display:inline-block;font-size:12px;color:#fff;background:var(--tomato);border-radius:999px;padding:1px 8px;vertical-align:1px}
-.pick{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.pick span{font-size:14px;color:var(--ink-soft)}
-.pick button{font-family:var(--f-disp);font-size:16px;border:3px solid var(--ink);border-radius:999px;background:#fff;padding:4px 14px;cursor:pointer;color:var(--ink)}
+.pick{flex-basis:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pick span{grid-column:1/-1;font-size:14px;color:var(--ink-soft)}
+.pick button{font-family:var(--f-disp);font-size:clamp(14px,3.9vw,17px);white-space:nowrap;border:3px solid var(--ink);border-radius:999px;background:#fff;padding:6px 4px;cursor:pointer;color:var(--ink);min-width:0}
 .pick button:hover{background:var(--bulb)}
 .paid-note{flex-basis:100%;margin:0;font-size:13px;color:var(--ink-soft)}
 .paid-note:empty{display:none}
@@ -744,6 +744,7 @@ async function run(p){
   JUDGES.forEach(j=>{ setState(j,'think'); j.verdict=null; j.mark.className='lamp'; j.mark.textContent='?';
     j.line.className='line wait'; dots(j.line,'심사 중'); });
   document.body.classList.add('open'); redraw();
+  scrollTo({top:0,behavior:'instant'}); // 막이 열리면 전광판부터 보이게
 
   const [{res,note,jid}] = await Promise.all([ask(p), wait(2200)]);
 
