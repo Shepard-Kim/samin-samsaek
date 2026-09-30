@@ -135,8 +135,58 @@ button,input,textarea{font:inherit;color:inherit}
 .paid{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 14px;border-radius:14px;background:rgba(255,250,240,.85);border:3px solid var(--ink)}
 .paid p{margin:0;flex:1 1 260px;font-size:15px;color:var(--ink-soft)}
 .paid .btns{display:flex;flex-wrap:wrap;gap:8px}
-.paid button{border:2px dashed var(--ink-soft);background:transparent;border-radius:10px;padding:6px 12px;color:var(--ink-soft);font-size:13px;cursor:not-allowed;line-height:1.3}
+.paid .btns button{border:3px solid var(--ink);background:var(--bulb);border-radius:10px;padding:6px 12px;color:var(--ink);font-size:13px;cursor:pointer;line-height:1.3;box-shadow:0 3px 0 var(--ink)}
+.paid .btns button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.paid .btns button:disabled{background:transparent;border-style:dashed;border-color:var(--ink-soft);color:var(--ink-soft);box-shadow:none;cursor:not-allowed;transform:none}
 .paid button b{color:var(--ink);font-family:var(--f-disp);font-weight:400;font-size:15px}
+.paid s{color:var(--ink-soft)}
+.beta{display:inline-block;font-size:12px;color:#fff;background:var(--tomato);border-radius:999px;padding:1px 8px;vertical-align:1px}
+.pick{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pick span{font-size:14px;color:var(--ink-soft)}
+.pick button{font-family:var(--f-disp);font-size:16px;border:3px solid var(--ink);border-radius:999px;background:#fff;padding:4px 14px;cursor:pointer;color:var(--ink)}
+.pick button:hover{background:var(--bulb)}
+.paid-note{flex-basis:100%;margin:0;font-size:13px;color:var(--ink-soft)}
+.paid-note:empty{display:none}
+.top-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn.ghost{background:var(--paper)}
+
+/* 상세 풀이 · 공유 오버레이 */
+.sheet{position:fixed;inset:0;z-index:35;overflow-y:auto;background:var(--paper);padding:0 16px 24px;overscroll-behavior:contain}
+.sheet-in{max-width:760px;margin:0 auto;display:grid;gap:16px}
+.sheet-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;background:var(--paper);border-bottom:3px dashed rgba(43,33,64,.18)}
+.sheet-brand{font-family:var(--f-disp);font-size:18px;color:var(--tomato-dk)}
+.sheet-q{font-family:var(--f-disp);font-weight:400;font-size:clamp(26px,4.4vw,38px);line-height:1.2;margin:4px 0 0;text-wrap:balance}
+.summary{border:4px solid var(--ink);border-radius:18px;background:var(--plum);color:var(--paper);padding:16px 18px}
+.summary h3{margin:0 0 6px;font-family:var(--f-disp);font-weight:400;font-size:20px;color:var(--amber)}
+.summary p{margin:0;font-size:17px;line-height:1.55}
+.dcard{border:4px solid var(--ink);border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 8px 0 rgba(43,33,64,.12)}
+.dhead{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 16px;background:var(--cream);border-bottom:4px solid var(--ink)}
+.dhead img{width:72px;height:96px;image-rendering:pixelated;image-rendering:crisp-edges}
+.dhead .who{font-size:13px;color:var(--ink-soft)}
+.dhead h3{margin:2px 0 0;font-family:var(--f-disp);font-weight:400;font-size:clamp(19px,2.6vw,24px);line-height:1.25;text-wrap:balance}
+.dhead .lamp{border-color:var(--ink)}
+.dbody{display:grid;gap:14px;padding:16px 18px 18px}
+.dbody h4{margin:0 0 4px;font-family:var(--f-disp);font-weight:400;font-size:17px;color:var(--teal)}
+.dbody p{margin:0;font-size:16px;line-height:1.6;max-width:65ch}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.dgrid section{border-radius:12px;padding:10px 12px;background:#effaf6}
+.dgrid section.warn{background:#fff1ee}
+.dgrid section.warn h4{color:var(--tomato-dk)}
+.closing{margin:0;padding:12px 16px;border-left:6px solid var(--amber);background:var(--cream);border-radius:0 12px 12px 0;font-family:var(--f-disp);font-size:18px;line-height:1.4}
+.wait-box{display:grid;justify-items:center;gap:10px;padding:32px 16px;text-align:center}
+.wait-box .faces{display:flex;gap:10px}
+.wait-box img{width:84px;height:112px;image-rendering:pixelated;animation:bob .6s steps(1) infinite}
+.wait-box img:nth-child(2){animation-delay:-.2s}.wait-box img:nth-child(3){animation-delay:-.4s}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.wait-box p{margin:0;font-size:16px;color:var(--ink-soft)}
+.wait-box strong{font-family:var(--f-disp);font-weight:400;font-size:22px}
+.more{justify-self:center}
+.share{display:grid;place-items:center;background:rgba(43,33,64,.72);padding:16px}
+.share[hidden]{display:none}
+.share-in{display:grid;gap:12px;justify-items:center;max-width:440px;width:100%}
+.share-in img{width:100%;max-height:70vh;object-fit:contain;border-radius:12px;border:4px solid var(--paper);background:var(--cream)}
+.share-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.share-msg{margin:0;min-height:1.2em;color:var(--paper);font-size:14px;text-align:center}
 .foot{font-size:13px;color:var(--ink-soft);text-align:center;margin:0}
 
 /* ---------- 막 ---------- */
@@ -198,7 +248,7 @@ textarea{resize:none;height:54px}
 @media (max-width:520px){ .card{padding:14px 14px 12px} .brand{font-size:15px} }
 @media (prefers-reduced-motion:reduce){
   .curtain,.entry{transition:none}
-  .stage::before,.board,.card,.judge.think canvas,.bubble,.board.flash{animation:none}
+  .stage::before,.board,.card,.judge.think canvas,.bubble,.board.flash,.wait-box img{animation:none}
   .qs i{animation:none;opacity:1}
 }
 </style>
@@ -211,7 +261,10 @@ textarea{resize:none;height:54px}
     <section class="board" id="board" aria-label="전광판" aria-live="polite">
       <div class="top">
         <span class="brand">삼인삼색 운세 오디션</span>
-        <button class="btn small" id="again" type="button">다시 심사받기</button>
+        <div class="top-btns">
+          <button class="btn small ghost" id="share" type="button" hidden>결과 공유</button>
+          <button class="btn small" id="again" type="button">다시 심사받기</button>
+        </div>
       </div>
       <h2 class="q" id="q">올해 이직해도 될까?</h2>
       <div class="score-box">
@@ -230,16 +283,50 @@ textarea{resize:none;height:54px}
     </section>
 
     <section class="paid">
-      <p>왜 O를 들었는지, 왜 X를 들었는지 궁금하다면 심사위원의 상세 풀이를 열어보세요.</p>
+      <p>왜 O를 들었는지, 왜 X를 들었는지 궁금하다면 심사위원의 상세 풀이를 열어보세요. <span class="beta">베타 기간 무료</span></p>
       <div class="btns">
-        <button type="button" disabled><b>한 명 상세 풀이</b> 1,000원 · 준비 중</button>
-        <button type="button" disabled><b>세 명 전부</b> 2,500원 · 준비 중</button>
+        <button type="button" id="buyOne" disabled aria-expanded="false" aria-controls="pick"><b>한 명 상세 풀이</b> <s>1,000원</s></button>
+        <button type="button" id="buyAll" disabled><b>세 명 전부</b> <s>2,500원</s></button>
       </div>
+      <div class="pick" id="pick" hidden>
+        <span>누구의 풀이를 열어 볼까요?</span>
+        <button type="button" data-who="saju">사주 할머니</button>
+        <button type="button" data-who="jami">자미두수 도사</button>
+        <button type="button" data-who="vedic">베딕 구루</button>
+      </div>
+      <p class="paid-note" id="paidNote">심사를 받으면 상세 풀이를 열 수 있어요.</p>
     </section>
 
     <p class="foot">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.</p>
   </div>
 </main>
+
+<!-- 상세 풀이 -->
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetQ">
+  <div class="sheet-in">
+    <header class="sheet-head">
+      <button class="btn small ghost" id="sheetClose" type="button">← 무대로</button>
+      <span class="sheet-brand">상세 풀이</span>
+    </header>
+    <h2 class="sheet-q" id="sheetQ"></h2>
+    <div id="sheetBody"></div>
+    <p class="foot">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.</p>
+  </div>
+</div>
+
+<!-- 결과 공유 -->
+<div class="sheet share" id="shareBox" hidden role="dialog" aria-modal="true" aria-label="결과 공유">
+  <div class="share-in">
+    <img id="shareImg" alt="판정 결과 이미지">
+    <div class="share-btns">
+      <button class="btn" id="shareNative" type="button" hidden>공유하기</button>
+      <button class="btn" id="shareSave" type="button">이미지 저장</button>
+      <button class="btn ghost" id="shareLink" type="button">링크 복사</button>
+      <button class="btn ghost" id="shareClose" type="button">닫기</button>
+    </div>
+    <p class="share-msg" id="shareMsg" role="status"></p>
+  </div>
+</div>
 
 <div class="curtain l" aria-hidden="true"></div>
 <div class="curtain r" aria-hidden="true"></div>
@@ -580,6 +667,7 @@ $('#entry').addEventListener('submit',e=>{
 $('#again').addEventListener('click',()=>{
   document.body.classList.remove('open');
   JUDGES.forEach(j=>setState(j,'idle')); redraw();
+  setResult(null);
   setTimeout(()=>$('#go').focus(),REDUCED?0:500);
 });
 
@@ -624,6 +712,7 @@ let running=false;
 async function run(p){
   if(running) return; running=true;
   const again=$('#again'); again.disabled=true; dots(again,'심사 중');
+  setResult(null);
   $('#q').textContent=p.q;
   $('#so').textContent='?'; $('#sx').textContent='?';
   const grade=$('#grade'); grade.className='grade'; dots($('#gradeTxt'),'');
@@ -650,6 +739,7 @@ async function run(p){
   if(o===0){ JUDGES.forEach(j=>setState(j,'panic')); redraw();
     const b=$('#board'); b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
   again.disabled=false; undots(again,'다시 심사받기'); running=false;
+  setResult({p, res, real:!note, o, x, grade:G2[0].replace('<br>',' ')});
 }
 
 function fireworks(){
@@ -665,6 +755,202 @@ function fireworks(){
     for(const p of ps){ p.x+=p.vx; p.y+=p.vy; p.vy+=.025; p.vx*=.98; if(p.l>12||p.l%4<2){ x.fillStyle=p.c; x.fillRect(p.x|0,p.y|0,1,1);} }
     if(ps.length||n<9) requestAnimationFrame(step); else c.hidden=true;
   })(start);
+}
+
+/* ================= 판정 결과 상태 ================= */
+let shown=null;               // {p,res,real,o,x,grade}
+let details={};              // 이번 판정의 상세 풀이 (who → 결과)
+function setResult(r){
+  shown=r; details={};
+  $('#share').hidden=!r;
+  const ok=!!(r&&r.real);
+  $('#buyOne').disabled=!ok; $('#buyAll').disabled=!ok;
+  $('#pick').hidden=true; $('#buyOne').setAttribute('aria-expanded','false');
+  $('#paidNote').textContent= !r ? '심사를 받으면 상세 풀이를 열 수 있어요.'
+    : ok ? '' : '연습 판정에는 상세 풀이가 없어요. 잠시 뒤 다시 심사받아 주세요.';
+}
+const portrait=j=>{ const i=new Image(); i.src=j.ctx.canvas.toDataURL(); i.alt=''; return i; };
+const el=(tag,cls,text)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; };
+
+/* ================= 오버레이 공통 ================= */
+let returnFocus=null;
+function openLayer(box,focusEl){ returnFocus=document.activeElement; box.hidden=false; document.body.style.overflow='hidden'; box.scrollTop=0; focusEl.focus(); }
+function closeLayer(box){ box.hidden=true; if($('#sheet').hidden&&$('#shareBox').hidden) document.body.style.overflow=''; returnFocus?.focus?.(); }
+addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
+  if(!$('#shareBox').hidden) closeLayer($('#shareBox')); else if(!$('#sheet').hidden) closeLayer($('#sheet')); });
+
+/* ================= 상세 풀이 ================= */
+$('#buyOne').addEventListener('click',()=>{ const p=$('#pick'); p.hidden=!p.hidden; $('#buyOne').setAttribute('aria-expanded',String(!p.hidden)); });
+$('#pick').addEventListener('click',e=>{ const w=e.target.closest('button')?.dataset.who; if(w) openDetail(w); });
+$('#buyAll').addEventListener('click',()=>openDetail('all'));
+$('#sheetClose').addEventListener('click',()=>closeLayer($('#sheet')));
+
+async function openDetail(who){
+  if(!shown?.real) return;
+  const body=$('#sheetBody'); $('#sheetQ').textContent=shown.p.q;
+  openLayer($('#sheet'),$('#sheetClose'));
+  const have=details[who]||(details.all&&who!=='all'&&{judges:details.all.judges.filter(j=>j.id===who),summary:''});
+  if(have) return renderDetail(who,have);
+
+  const pics=(who==='all'?JUDGES:JUDGES.filter(j=>j.id===who));
+  body.replaceChildren(waitBox(pics,who==='all'?'세 심사위원이 풀이를 쓰는 중':`${pics[0].name}가 풀이를 쓰는 중`,
+    who==='all'?'세 명 전부는 30초쯤 걸려요.':'15초쯤 걸려요.'));
+  try{
+    const r=await fetch(API_URL+'/detail',{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({...shown.p,who}),signal:AbortSignal.timeout(90000)});
+    if(r.status===429) throw new Error('풀이 요청이 너무 잦아요. 1분 뒤에 다시 열어 주세요.');
+    if(r.status===409) throw new Error('오늘 판정 기록을 찾지 못했어요. 다시 심사받은 뒤 열어 주세요.');
+    if(!r.ok) throw new Error('심사위원 연결이 잠시 끊겼어요. 잠시 뒤 다시 열어 주세요.');
+    const d=await r.json();
+    if(!Array.isArray(d.judges)||!d.judges.length) throw new Error('풀이를 읽지 못했어요. 다시 열어 주세요.');
+    details[who]=d;
+    if(!$('#sheet').hidden) renderDetail(who,d);
+  }catch(e){
+    const box=el('div','wait-box');
+    box.append(el('strong',null,'풀이를 열지 못했어요'),el('p',null,e.name==='TimeoutError'?'시간이 너무 오래 걸렸어요. 다시 열어 주세요.':e.message));
+    const retry=el('button','btn','다시 열기'); retry.type='button'; retry.onclick=()=>openDetail(who); box.append(retry);
+    body.replaceChildren(box);
+  }
+}
+function waitBox(pics,title,sub){
+  const box=el('div','wait-box'), faces=el('div','faces');
+  pics.forEach(j=>faces.append(portrait(j)));
+  const t=el('strong'); dots(t,title);
+  box.append(faces,t,el('p',null,sub));
+  return box;
+}
+function renderDetail(who,d){
+  const body=$('#sheetBody'); const out=[];
+  if(who==='all'&&d.summary){
+    const s=el('section','summary');
+    s.append(el('h3',null,`종합 ${shown.o} : ${shown.x} · ${shown.grade}`),el('p',null,d.summary));
+    out.push(s);
+  }
+  for(const dj of d.judges){
+    const j=JUDGES.find(x=>x.id===dj.id); if(!j) continue;
+    const v=(dj.verdict||j.verdict)==='O'?'O':'X';
+    const card=el('article','dcard'), head=el('div','dhead'), txt=el('div');
+    txt.append(el('div','who',`${j.name} · ${j.sys}`),el('h3',null,dj.headline));
+    const lamp=el('div','lamp '+(v==='O'?'o':'x'),v); lamp.setAttribute('aria-label','판정 '+v);
+    head.append(portrait(j),txt,lamp);
+    const b=el('div','dbody');
+    const sec=(h,p,cls)=>{ const s=el('section',cls); s.append(el('h4',null,h),el('p',null,p)); return s; };
+    const grid=el('div','dgrid'); grid.append(sec('좋은 때',dj.good_time,'good'),sec('조심할 때',dj.caution,'warn'));
+    b.append(sec(`왜 ${v}를 들었나`,dj.basis),grid,sec('이렇게 해 보세요',dj.advice),el('blockquote','closing',dj.closing));
+    card.append(head,b); out.push(card);
+  }
+  if(who!=='all'){
+    const more=el('button','btn more','세 명 전부 풀이 보기 · 베타 무료'); more.type='button';
+    more.onclick=()=>openDetail('all'); out.push(more);
+  }
+  body.replaceChildren(...out);
+}
+
+/* ================= 결과 공유 이미지 ================= */
+const SITE='https://mingou0131.github.io/samin-samsaek/';
+let shareFile=null;
+$('#share').addEventListener('click',openShare);
+$('#shareClose').addEventListener('click',()=>closeLayer($('#shareBox')));
+$('#shareSave').addEventListener('click',()=>{
+  if(!shareFile) return;
+  const a=el('a'); a.href=URL.createObjectURL(shareFile); a.download=shareFile.name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000); $('#shareMsg').textContent='이미지를 저장했어요.';
+});
+$('#shareNative').addEventListener('click',async()=>{
+  try{ await navigator.share({files:[shareFile],title:'삼인삼색 운세 오디션',text:shareText(),url:SITE}); }
+  catch(e){ if(e.name!=='AbortError') $('#shareMsg').textContent='공유하지 못했어요. 이미지 저장을 이용해 주세요.'; }
+});
+$('#shareLink').addEventListener('click',async()=>{
+  try{ await navigator.clipboard.writeText(SITE); $('#shareMsg').textContent='사이트 링크를 복사했어요.'; }
+  catch{ $('#shareMsg').textContent=SITE; }
+});
+const shareText=()=>`"${shown.p.q}" 심사 결과 ${shown.o} : ${shown.x} ${shown.grade}!`;
+
+async function openShare(){
+  if(!shown) return;
+  $('#shareMsg').textContent='이미지를 만드는 중이에요…';
+  $('#shareImg').removeAttribute('src');
+  openLayer($('#shareBox'),$('#shareClose'));
+  const card=await makeCard();
+  const blob=await new Promise(r=>card.toBlob(r,'image/png'));
+  shareFile=new File([blob],`samin-samsaek-${new Date().toISOString().slice(0,10)}.png`,{type:'image/png'});
+  $('#shareImg').src=URL.createObjectURL(blob);
+  $('#shareNative').hidden=!(navigator.canShare&&navigator.canShare({files:[shareFile]}));
+  $('#shareMsg').textContent='';
+}
+
+function wrapText(x,text,maxW,maxLines){
+  const lines=[]; let cur='';
+  for(const w of text.split(' ')){
+    const t=cur?cur+' '+w:w;
+    if(x.measureText(t).width<=maxW){ cur=t; continue; }
+    if(cur) lines.push(cur);
+    cur=w;
+    while(x.measureText(cur).width>maxW){ let i=cur.length; while(i>1&&x.measureText(cur.slice(0,i)).width>maxW) i--; lines.push(cur.slice(0,i)); cur=cur.slice(i); }
+  }
+  if(cur) lines.push(cur);
+  if(lines.length<=maxLines) return lines;
+  const keep=lines.slice(0,maxLines); let l=keep[maxLines-1];
+  while(l&&x.measureText(l+'…').width>maxW) l=l.slice(0,-1);
+  keep[maxLines-1]=l+'…'; return keep;
+}
+function rrect(x,X,Y,W,H,r){ x.beginPath(); x.roundRect(X,Y,W,H,r); }
+
+// 1080×1350 (인스타그램 세로) 공유 카드: 무대 화면을 그대로 옮긴 구성
+async function makeCard(){
+  await Promise.all(['64px "Do Hyeon"','700 30px "Gowun Dodum"','40px "Press Start 2P"'].map(f=>document.fonts.load(f,'가O1')));
+  const W=1080,H=1350,c=el('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
+  const C={cream:'#fff0cc',ray:'#ffe1a1',ink:'#2b2140',plum:'#2b2140',amber:'#ffb53d',o:'#34d27f',xx:'#ff5a52',teal:'#1f6f78',tealDk:'#124a50',tomato:'#e0483e',bulb:'#ffd966',paper:'#fffaf0',soft:'#6b5d7e',lav:'#cdbfe6'};
+  x.fillStyle=C.cream; x.fillRect(0,0,W,H);
+  x.save(); x.translate(W/2,640); x.fillStyle=C.ray;
+  for(let i=0;i<20;i++){ x.beginPath(); x.moveTo(0,0); x.arc(0,0,1500,i*Math.PI/10,i*Math.PI/10+Math.PI/20); x.fill(); }
+  x.restore();
+
+  // 전광판
+  rrect(x,40,40,1000,340,40); x.fillStyle=C.tomato; x.fill(); x.lineWidth=6; x.strokeStyle=C.ink; x.stroke();
+  rrect(x,58,58,964,304,28); x.fillStyle=C.plum; x.fill();
+  x.fillStyle=C.bulb;
+  for(let X=70;X<=1010;X+=30){ x.beginPath(); x.arc(X,49,5,0,7); x.arc(X,371,5,0,7); x.fill(); }
+  for(let Y=80;Y<=340;Y+=30){ x.beginPath(); x.arc(49,Y,5,0,7); x.arc(1031,Y,5,0,7); x.fill(); }
+  x.textBaseline='alphabetic';
+  x.fillStyle=C.lav; x.font='30px "Do Hyeon"'; x.fillText('삼인삼색 운세 오디션',96,118);
+  x.fillStyle=C.amber; x.font='58px "Do Hyeon"'; x.shadowColor='rgba(255,160,40,.6)'; x.shadowBlur=14;
+  wrapText(x,shown.p.q,560,2).forEach((l,i)=>x.fillText(l,96,196+i*66));
+  x.font='56px "Press Start 2P"';
+  const so=String(shown.o), sx=String(shown.x);
+  x.fillStyle=C.o; x.shadowColor=C.o; x.fillText(so,96,338);
+  x.fillStyle=C.amber; x.shadowColor=C.amber; x.fillText(':',96+x.measureText(so).width+22,338);
+  x.fillStyle=C.xx; x.shadowColor=C.xx; x.fillText(sx,96+x.measureText(so+':').width+44,338);
+  const gcol=shown.o>=2?C.o:C.xx;
+  x.shadowColor=gcol; x.shadowBlur=24; x.lineWidth=10; x.strokeStyle=gcol;
+  x.beginPath(); x.arc(862,210,122,0,7); x.stroke();
+  x.fillStyle=C.paper; x.font='26px "Press Start 2P"'; x.textAlign='center';
+  const gl=shown.grade.split(' '); gl.forEach((l,i)=>x.fillText(l,862,222+(i-(gl.length-1)/2)*42));
+  x.textAlign='left'; x.shadowBlur=0;
+
+  // 심사위원
+  x.imageSmoothingEnabled=false;
+  JUDGES.forEach((j,i)=>{ const cx=190+i*350; x.drawImage(j.ctx.canvas,cx-120,392,240,320); });
+  rrect(x,40,680,1000,74,18); x.fillStyle=C.teal; x.fill(); x.lineWidth=6; x.strokeStyle=C.ink; x.stroke();
+  x.font='32px "Do Hyeon"'; x.textAlign='center';
+  JUDGES.forEach((j,i)=>{ const cx=190+i*350; rrect(x,cx-150,694,300,46,12); x.fillStyle=C.paper; x.fill(); x.lineWidth=4; x.stroke(); x.fillStyle=C.ink; x.fillText(j.name,cx,729); });
+  x.textAlign='left';
+
+  // 한 줄 평
+  rrect(x,40,770,1000,470,24); x.fillStyle=C.teal; x.fill(); x.lineWidth=6; x.strokeStyle=C.ink; x.stroke();
+  JUDGES.forEach((j,i)=>{
+    const y=790+i*150, v=j.verdict==='O';
+    if(i){ x.strokeStyle='rgba(255,255,255,.22)'; x.lineWidth=3; x.setLineDash([10,8]); x.beginPath(); x.moveTo(64,y-6); x.lineTo(1016,y-6); x.stroke(); x.setLineDash([]); }
+    x.fillStyle=v?C.o:C.xx; x.beginPath(); x.arc(110,y+56,36,0,7); x.fill();
+    x.fillStyle=v?'#0f3d24':'#4a0f0b'; x.font='30px "Press Start 2P"'; x.textAlign='center'; x.fillText(j.verdict,111,y+72); x.textAlign='left';
+    x.fillStyle=C.paper; x.font='700 29px "Gowun Dodum"';
+    wrapText(x,j.line.textContent,850,3).forEach((l,k)=>x.fillText(l,170,y+36+k*40));
+  });
+
+  x.fillStyle=C.ink; x.font='30px "Do Hyeon"'; x.textAlign='center';
+  x.fillText('나도 심사받기 → mingou0131.github.io/samin-samsaek',W/2,1292);
+  x.fillStyle=C.soft; x.font='22px "Gowun Dodum"'; x.fillText('재미로 보는 운세입니다',W/2,1326);
+  return c;
 }
 
 })();
