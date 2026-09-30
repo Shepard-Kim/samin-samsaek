@@ -357,7 +357,7 @@ textarea{resize:none;height:54px}
     </div>
     <p class="err" id="err" role="alert"></p>
     <button class="btn go" id="go" type="submit">질문 전달하기</button>
-    <p class="fine">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.</p>
+    <p class="fine">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.<br>서비스 개선을 위해 질문과 이용 기록을 저장해요. 생년월일은 태어난 해만 저장해요.</p>
   </form>
 </div>
 
@@ -369,7 +369,7 @@ const $ = s => document.querySelector(s);
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const QUESTIONS = ['올해 이직해도 될까?','올해 연애운 좋을까?','올해 돈이 모일까?','지금 시작하려는 일, 잘 될까?','직접 쓰기'];
 const JUDGES = [
-  {id:'saju', name:'사주 할머니',  sys:'한국 · 사주팔자',   shout:'아이고, 택도 없다!',    phase:0,   period:3.1},
+  {id:'saju', name:'사주 할머니',  sys:'한국 · 사주팔자',   shout:'안 돼. 다음.',          phase:0,   period:3.1},
   {id:'jami', name:'자미두수 도사', sys:'중국 · 자미두수',   shout:'不可! 절대 불가하오!',   phase:1.3, period:3.9},
   {id:'vedic',name:'베딕 구루',    sys:'인도 · 베딕 점성술', shout:'노노노… 평온하게, 친구여', phase:2.2, period:2.6},
 ];
@@ -661,10 +661,11 @@ $('#entry').addEventListener('submit',e=>{
   if(!q){ $('#err').textContent='심사받을 질문을 적어 주세요.'; $('#custom').focus(); return; }
   $('#err').textContent='';
   run({birth, time:$('#noTime').checked?'':$('#btime').value, gender:document.querySelector('input[name=gender]:checked').value,
-       place:$('#place').value.trim(), q, today:todayISO()});
+       place:$('#place').value.trim(), q, preset:chosen!=='직접 쓰기', today:todayISO()});
 });
 
 $('#again').addEventListener('click',()=>{
+  track('again');
   document.body.classList.remove('open');
   JUDGES.forEach(j=>setState(j,'idle')); redraw();
   setResult(null);
@@ -684,8 +685,8 @@ function normalize(r){
 
 // AI를 못 쓰는 환경용 모의 판정 (입력값 해시로 고정)
 const MOCK={
-  saju:{O:['네 일간이 올해 불기운 타고 똑바로 섰다. 기회 앞에서 또 재기만 하면 그건 운 탓 아이고 니 탓이다.','재성이 제 발로 들어왔는데 뭘 망설이노. 단, 말만 번지르르한 사람 하나는 가을 전에 걸러내라.'],
-        X:['오행이 금으로 쏠려 지금 나서면 헛심만 쓴다. 급한 건 니 마음이지 니 팔자가 아이다.','올해 세운이 니 일간을 정통으로 친다. 동짓달 넘기고 다시 온나, 그때 해 줄 말이 있다.']},
+  saju:{O:['경금 일간에 올해 불기운이 붙었다. 움직일 때는 맞아. 망설이는 건 운이 아니라 너야.','재성이 들어왔다. 잡을지는 네 몫. 말만 번지르르한 사람 하나는 가을 전에 걸러.'],
+        X:['오행이 금으로 쏠렸다. 지금 나서면 헛수고야. 급한 건 네 마음이지 팔자가 아니다.','올해 세운이 네 일간을 정면으로 친다. 동지 지나고 다시 와. 그때 할 말이 있다.']},
   jami:{O:['「水到渠成」 관록궁에 화록이 들었소. 여름만 조심하시오.','「順水推舟」 명궁 천부가 녹존을 만났소. 귀인은 한 명이오.'],
         X:['「欲速則不達」 무곡이 화기를 맞았소. 봄을 기다리시오.','「塞翁失馬」 재백궁에 겁공이 비치오. 구멍부터 막으시오.']},
   vedic:{O:['목성이 10하우스를 고요히 지나며 문이 열리고 있습니다, 친구여. 토성이 움직이는 한 달만 숨을 고르며 지켜보십시오.','금성 다샤의 흐름이 달 별자리를 부드럽게 감쌉니다, 친구여. 수성 역행의 며칠만 마음을 고요히 두면 됩니다.'],
@@ -696,12 +697,15 @@ function mock(p){ const h=hash(JSON.stringify(p)), out={};
   JUDGES.forEach((j,i)=>{ const v=(h>>(i*3))&1?'O':'X'; out[j.id]={verdict:v,line:MOCK[j.id][v][(h>>(i*3+1))&1]}; }); return out; }
 
 const API_URL='https://samin-samsaek-judge.mingou0131.workers.dev';
+// 방문자 구분용 임의 ID (재질문·재방문 분석용, 개인을 알아볼 수 없음)
+const VID=(()=>{ try{ let v=localStorage.getItem('ss_vid'); if(!v){ v=crypto.randomUUID(); localStorage.setItem('ss_vid',v); } return v; }catch{ return crypto.randomUUID(); } })();
 async function ask(p){
   try{
-    const r=await fetch(API_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(p),signal:AbortSignal.timeout(45000)});
+    const r=await fetch(API_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...p,vid:VID}),signal:AbortSignal.timeout(45000)});
     if(r.status===429) return {res:mock(p),note:'심사 요청이 너무 잦아요. 1분 뒤에 다시 해 보세요. 이번 판정은 연습 판정이에요.'};
     if(!r.ok) throw new Error('HTTP '+r.status);
-    return {res:normalize(await r.json()),note:''};
+    const d=await r.json();
+    return {res:normalize(d),note:'',jid:d.jid};
   }catch(e){
     return {res:mock(p),note:'심사위원 연결이 잠시 끊겨 연습 판정을 보여드려요. 잠시 뒤 다시 해 보세요.'};
   }
@@ -721,7 +725,7 @@ async function run(p){
     j.line.className='line wait'; dots(j.line,'심사 중'); });
   document.body.classList.add('open'); redraw();
 
-  const [{res,note}] = await Promise.all([ask(p), wait(2200)]);
+  const [{res,note,jid}] = await Promise.all([ask(p), wait(2200)]);
 
   for(const j of JUDGES){
     j.verdict=res[j.id].verdict; setState(j,'raise1'); redraw();
@@ -739,7 +743,7 @@ async function run(p){
   if(o===0){ JUDGES.forEach(j=>setState(j,'panic')); redraw();
     const b=$('#board'); b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
   again.disabled=false; undots(again,'다시 심사받기'); running=false;
-  setResult({p, res, real:!note, o, x, grade:G2[0].replace('<br>',' ')});
+  setResult({p, res, jid, real:!note, o, x, grade:G2[0].replace('<br>',' ')});
 }
 
 function fireworks(){
@@ -770,6 +774,12 @@ function setResult(r){
     : ok ? '' : '연습 판정에는 상세 풀이가 없어요. 잠시 뒤 다시 심사받아 주세요.';
 }
 const portrait=j=>{ const i=new Image(); i.src=j.ctx.canvas.toDataURL(); i.alt=''; return i; };
+// 화면 이벤트 기록 (실패해도 화면에는 영향 없음)
+function track(type,who){
+  if(!shown?.jid) return;
+  fetch(API_URL+'/event',{method:'POST',keepalive:true,headers:{'content-type':'application/json'},
+    body:JSON.stringify({type,who,jid:shown.jid,vid:VID})}).catch(()=>{});
+}
 const el=(tag,cls,text)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; };
 
 /* ================= 오버레이 공통 ================= */
@@ -780,24 +790,24 @@ addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
   if(!$('#shareBox').hidden) closeLayer($('#shareBox')); else if(!$('#sheet').hidden) closeLayer($('#sheet')); });
 
 /* ================= 상세 풀이 ================= */
-$('#buyOne').addEventListener('click',()=>{ const p=$('#pick'); p.hidden=!p.hidden; $('#buyOne').setAttribute('aria-expanded',String(!p.hidden)); });
+$('#buyOne').addEventListener('click',()=>{ const p=$('#pick'); p.hidden=!p.hidden; if(!p.hidden) track('pick_open'); $('#buyOne').setAttribute('aria-expanded',String(!p.hidden)); });
 $('#pick').addEventListener('click',e=>{ const w=e.target.closest('button')?.dataset.who; if(w) openDetail(w); });
 $('#buyAll').addEventListener('click',()=>openDetail('all'));
-$('#sheetClose').addEventListener('click',()=>closeLayer($('#sheet')));
+$('#sheetClose').addEventListener('click',()=>{ track('detail_close'); closeLayer($('#sheet')); });
 
 async function openDetail(who){
   if(!shown?.real) return;
   const body=$('#sheetBody'); $('#sheetQ').textContent=shown.p.q;
   openLayer($('#sheet'),$('#sheetClose'));
   const have=details[who]||(details.all&&who!=='all'&&{judges:details.all.judges.filter(j=>j.id===who),summary:''});
-  if(have) return renderDetail(who,have);
+  if(have){ track('detail_view',who); return renderDetail(who,have); }
 
   const pics=(who==='all'?JUDGES:JUDGES.filter(j=>j.id===who));
   body.replaceChildren(waitBox(pics,who==='all'?'세 심사위원이 풀이를 쓰는 중':`${pics[0].name}가 풀이를 쓰는 중`,
     who==='all'?'세 명 전부는 30초쯤 걸려요.':'15초쯤 걸려요.'));
   try{
     const r=await fetch(API_URL+'/detail',{method:'POST',headers:{'content-type':'application/json'},
-      body:JSON.stringify({...shown.p,who}),signal:AbortSignal.timeout(90000)});
+      body:JSON.stringify({...shown.p,who,vid:VID}),signal:AbortSignal.timeout(90000)});
     if(r.status===429) throw new Error('풀이 요청이 너무 잦아요. 1분 뒤에 다시 열어 주세요.');
     if(r.status===409) throw new Error('오늘 판정 기록을 찾지 못했어요. 다시 심사받은 뒤 열어 주세요.');
     if(!r.ok) throw new Error('심사위원 연결이 잠시 끊겼어요. 잠시 뒤 다시 열어 주세요.');
@@ -854,13 +864,14 @@ $('#shareClose').addEventListener('click',()=>closeLayer($('#shareBox')));
 $('#shareSave').addEventListener('click',()=>{
   if(!shareFile) return;
   const a=el('a'); a.href=URL.createObjectURL(shareFile); a.download=shareFile.name; a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),4000); $('#shareMsg').textContent='이미지를 저장했어요.';
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000); track('share_save'); $('#shareMsg').textContent='이미지를 저장했어요.';
 });
 $('#shareNative').addEventListener('click',async()=>{
-  try{ await navigator.share({files:[shareFile],title:'삼인삼색 운세 오디션',text:shareText(),url:SITE}); }
+  try{ await navigator.share({files:[shareFile],title:'삼인삼색 운세 오디션',text:shareText(),url:SITE}); track('share_native'); }
   catch(e){ if(e.name!=='AbortError') $('#shareMsg').textContent='공유하지 못했어요. 이미지 저장을 이용해 주세요.'; }
 });
 $('#shareLink').addEventListener('click',async()=>{
+  track('share_link');
   try{ await navigator.clipboard.writeText(SITE); $('#shareMsg').textContent='사이트 링크를 복사했어요.'; }
   catch{ $('#shareMsg').textContent=SITE; }
 });
@@ -868,6 +879,7 @@ const shareText=()=>`"${shown.p.q}" 심사 결과 ${shown.o} : ${shown.x} ${show
 
 async function openShare(){
   if(!shown) return;
+  track('share_open');
   $('#shareMsg').textContent='이미지를 만드는 중이에요…';
   $('#shareImg').removeAttribute('src');
   openLayer($('#shareBox'),$('#shareClose'));
