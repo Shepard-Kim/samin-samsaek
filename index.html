@@ -160,6 +160,8 @@ button,input,textarea{font:inherit;color:inherit}
 .paid-note:empty{display:none}
 .top-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .btn.ghost{background:var(--paper)}
+.share-cta{width:100%;font-size:22px;padding:12px 16px;background:var(--tomato);color:var(--paper);display:flex;flex-direction:column;align-items:center;gap:2px}
+.share-cta small{font-family:var(--f-body);font-size:13px;opacity:.9}
 
 /* 상세 풀이 · 공유 오버레이 */
 .sheet{position:fixed;inset:0;z-index:35;overflow-y:auto;background:var(--paper);padding:0 16px 24px;overscroll-behavior:contain}
@@ -297,6 +299,9 @@ textarea{resize:none;height:54px}
         <div class="cells" id="cells" aria-label="한 줄 평"></div>
       </div>
     </section>
+
+    <!-- 한 줄 평을 읽고 내려온 시선이 바로 닿는 자리 -->
+    <button class="btn share-cta" id="share2" type="button" hidden>결과 공유하기 <small>친구에게 결과 링크 보내기</small></button>
 
     <section class="paid">
       <p>왜 O를 들었는지, 왜 X를 들었는지 궁금하다면 심사위원의 상세 풀이를 열어보세요. <span class="beta">베타 기간 무료</span></p>
@@ -781,7 +786,7 @@ let shown=null;               // {p,res,real,o,x,grade}
 let details={};              // 이번 판정의 상세 풀이 (who → 결과)
 function setResult(r){
   shown=r; details={};
-  $('#share').hidden=!r;
+  $('#share').hidden=!r; $('#share2').hidden=!r;
   const ok=!!(r&&r.real);
   $('#buyOne').disabled=!ok; $('#buyAll').disabled=!ok;
   $('#pick').hidden=true; $('#buyOne').setAttribute('aria-expanded','false');
@@ -878,6 +883,7 @@ const SITE='https://mingou0131.github.io/samin-samsaek/';
 const CAN_SHARE=!!navigator.share;
 let shareFile=null;
 $('#share').addEventListener('click',openShare);
+$('#share2').addEventListener('click',openShare);
 $('#shareClose').addEventListener('click',()=>closeLayer($('#shareBox')));
 $('#shareSave').addEventListener('click',()=>{
   if(!shareFile) return;
