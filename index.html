@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="한국의 사주, 중국의 자미두수, 인도의 베딕 점성술 — 세 명의 심사위원이 O·X 팻말로 당신의 질문을 심사합니다.">
+<title>삼인삼색 운세 오디션</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gowun+Dodum&family=Press+Start+2P&display=swap">
+<style>
+/* Layout: 화면 전체가 하나의 쇼 무대. 천장에 매달린 전구 전광판 → 햇살 무늬 배경 앞의 세 심사위원 → 책상 앞판이 곧 한 줄 평 화면.
+   한 줄 평은 각 심사위원 바로 아래에 붙어 "누가 무슨 말을 했는지"가 한눈에 이어진다. 좁은 화면에선 한 줄 평만 세로로 쌓인다. */
+:root{
+  --cream:#fff0cc; --ray:#ffe1a1; --paper:#fffaf0;
+  --ink:#2b2140; --ink-soft:#6b5d7e;
+  --plum:#2b2140; --plum-2:#3a2d57;
+  --amber:#ffb53d; --bulb:#ffd966; --bulb-hi:#fff7d6;
+  --o:#34d27f; --x:#ff5a52;
+  --teal:#1f6f78; --teal-dk:#124a50; --teal-lt:#2a8b95;
+  --tomato:#e0483e; --tomato-dk:#8e1f1a; --tomato-lt:#f47563;
+  --f-disp:"Do Hyeon","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-pix:"Press Start 2P",ui-monospace,monospace;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45;overflow-x:hidden}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--tomato);outline-offset:2px}
+
+/* ---------- 무대 ---------- */
+.stage{position:relative;min-height:100%;box-sizing:border-box;padding:46px 16px 16px;isolation:isolate}
+.stage::before{ /* 천천히 도는 햇살 무늬 */
+  content:"";position:fixed;left:50%;top:58%;width:max(240vw,240vh);aspect-ratio:1;translate:-50% -50%;z-index:-2;
+  background:repeating-conic-gradient(var(--ray) 0 9deg,var(--cream) 9deg 18deg);animation:spin 120s linear infinite;
+}
+.stage::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse 70% 60% at 50% 55%,transparent 40%,rgba(231,150,80,.28))}
+@keyframes spin{to{rotate:360deg}}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+
+/* 전광판 — 전구 테두리 */
+.board{
+  position:relative;border-radius:22px;border:8px dotted var(--bulb);
+  background:linear-gradient(var(--plum),var(--plum)) padding-box,linear-gradient(var(--tomato),var(--tomato)) border-box;
+  box-shadow:0 0 0 4px var(--ink),0 14px 0 -2px rgba(43,33,64,.18);
+  padding:12px 20px 14px;display:grid;gap:8px 22px;grid-template-columns:minmax(0,1fr) auto;align-items:center;
+  animation:bulbs 1s steps(1) infinite;
+}
+@keyframes bulbs{50%{border-color:var(--bulb-hi)}}
+.board::after{content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;
+  background:radial-gradient(circle,transparent 48%,rgba(0,0,0,.35) 50%) 0 0/4px 4px}
+.board>*{position:relative;z-index:1}
+.board .top{display:flex;justify-content:space-between;align-items:center;gap:10px;grid-column:1/-1}
+.brand{font-family:var(--f-disp);font-size:18px;color:#cdbfe6;letter-spacing:.02em}
+.q{font-family:var(--f-disp);font-weight:400;font-size:clamp(30px,4.4vw,46px);line-height:1.15;color:var(--amber);margin:0;min-width:0;
+   text-shadow:0 0 6px rgba(255,181,61,.7),0 0 18px rgba(255,140,20,.3);text-wrap:balance;overflow-wrap:anywhere}
+.score-box{display:flex;align-items:center;gap:22px;grid-row:2/span 2;grid-column:2}
+.score{font-family:var(--f-pix);font-size:clamp(38px,6vw,60px);white-space:nowrap;line-height:1;font-variant-numeric:tabular-nums}
+.score .so{color:var(--o);text-shadow:0 0 12px var(--o)}
+.score .sx{color:var(--x);text-shadow:0 0 12px var(--x)}
+.score .colon{color:var(--amber)}
+.grade{
+  width:clamp(128px,14vw,160px);aspect-ratio:1;max-width:100%;border-radius:50%;display:grid;place-items:center;text-align:center;
+  font-family:var(--f-pix);font-size:clamp(13px,1.6vw,17px);line-height:1.5;border:6px solid currentColor;color:var(--amber);
+  box-shadow:0 0 20px currentColor inset,0 0 20px currentColor;
+}
+.grade.good{color:var(--o)} .grade.bad{color:var(--x)}
+.grade span{color:var(--paper);text-shadow:0 0 8px currentColor}
+.status{font-size:15px;color:#cdbfe6;grid-column:1;min-height:1.2em;margin:0;align-self:end}
+.board.flash{animation:flash .32s steps(1) 7}
+@keyframes flash{50%{background:linear-gradient(#7d0d1c,#7d0d1c) padding-box,linear-gradient(var(--x),var(--x)) border-box;border-color:#fff}}
+@media (max-width:760px){ .board{grid-template-columns:minmax(0,1fr)} .score-box{justify-content:space-between;grid-row:auto;grid-column:1;gap:12px} .score{font-size:32px} .grade{width:112px;font-size:11px;border-width:5px} }
+
+.btn{
+  font-family:var(--f-disp);font-size:17px;border:3px solid var(--ink);border-radius:12px;cursor:pointer;padding:7px 16px;
+  background:var(--bulb);color:var(--ink);box-shadow:0 4px 0 var(--ink);transition:transform .08s;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn:disabled{opacity:.65;cursor:default;transform:none;box-shadow:0 4px 0 var(--ink)}
+.btn.small{font-size:15px;padding:4px 12px;min-width:7.5em;box-shadow:0 3px 0 var(--ink)}
+
+/* 심사위원석 */
+.set{position:relative}
+.judges{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:end;padding-top:34px}
+.judge{position:relative;display:flex;flex-direction:column;align-items:center;min-width:0}
+.judge canvas{width:100%;max-width:180px;aspect-ratio:48/64;image-rendering:pixelated;image-rendering:crisp-edges;display:block;transform-origin:50% 90%}
+.judge.think canvas{animation:tilt 1.1s steps(1) infinite}
+@keyframes tilt{0%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.qs{position:absolute;inset:0;pointer-events:none;display:none}
+.judge.think .qs{display:block}
+.qs i{position:absolute;font:normal 16px/1 var(--f-pix);color:var(--bulb);text-shadow:2px 2px 0 var(--ink);opacity:0;animation:qpop 1.8s steps(6) infinite}
+.qs i:nth-child(1){left:14%;top:18%;animation-delay:0s}
+.qs i:nth-child(2){right:12%;top:8%;animation-delay:.45s;font-size:22px}
+.qs i:nth-child(3){left:18%;top:44%;animation-delay:.9s;font-size:12px}
+.qs i:nth-child(4){right:16%;top:38%;animation-delay:1.35s}
+.qs i:nth-child(5){left:46%;top:-4%;animation-delay:.2s;font-size:12px}
+@keyframes qpop{0%{opacity:0;transform:translateY(8px) scale(.5)}20%{opacity:1;transform:translateY(0) scale(1.1)}65%{opacity:1;transform:translateY(-6px) scale(1)}100%{opacity:0;transform:translateY(-14px) scale(.8)}}
+.bubble{
+  position:absolute;top:-38px;left:50%;translate:-50% 0;white-space:nowrap;z-index:3;
+  font-family:var(--f-disp);font-size:clamp(13px,2vw,18px);color:var(--ink);background:var(--paper);
+  padding:4px 12px;border:3px solid var(--ink);border-radius:14px;animation:wobble .28s steps(1) infinite;
+}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-9px;width:10px;height:10px;background:var(--paper);border:3px solid var(--ink);border-top:0;border-left:0;transform:translateX(-50%) rotate(45deg)}
+@keyframes wobble{0%{rotate:-4deg}50%{rotate:4deg}}
+
+/* 책상: 윗판 = 명패, 앞판 = 한 줄 평 화면 */
+.desk{
+  position:relative;z-index:2;margin-top:calc(min(180px,30vw) * -.17);
+  border:4px solid var(--ink);border-radius:16px 16px 10px 10px;background:var(--teal);
+  box-shadow:0 8px 0 var(--teal-dk),0 18px 24px rgba(43,33,64,.18);overflow:hidden;
+}
+.plates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:8px 10px;background:var(--teal-lt);border-bottom:4px solid var(--ink)}
+.plate{background:var(--paper);border:3px solid var(--ink);border-radius:10px;padding:3px 6px;text-align:center;min-width:0}
+.plate b{display:block;font-family:var(--f-disp);font-weight:400;font-size:clamp(14px,2vw,19px);line-height:1.15}
+.plate small{display:block;font-size:clamp(10px,1.3vw,12px);color:var(--ink-soft);line-height:1.25}
+.cells{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.cell{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;padding:14px 14px 16px;min-width:0}
+.cell+.cell{border-left:3px dashed rgba(255,255,255,.22)}
+.lamp{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font:normal 20px/1 var(--f-pix);
+  border:3px solid var(--teal-dk);background:var(--teal-dk);color:rgba(255,255,255,.3)}
+.lamp.o{background:var(--o);border-color:#bff5d8;color:#0f3d24;box-shadow:0 0 16px var(--o)}
+.lamp.x{background:var(--x);border-color:#ffd2cf;color:#4a0f0b;box-shadow:0 0 16px var(--x)}
+.cell .who{display:none;font-size:13px;color:#bfe4e6}
+.cell .line{font-size:clamp(16px,1.6vw,19px);font-weight:700;color:var(--paper);line-height:1.42;overflow-wrap:anywhere}
+.cell .line.wait{color:#a9d3d6;font-weight:400}
+@media (max-width:760px){
+  .cells{grid-template-columns:minmax(0,1fr)}
+  .cell+.cell{border-left:0;border-top:3px dashed rgba(255,255,255,.22)}
+  .cell .who{display:block}
+}
+
+/* 유료 · 안내 */
+.paid{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 14px;border-radius:14px;background:rgba(255,250,240,.85);border:3px solid var(--ink)}
+.paid p{margin:0;flex:1 1 260px;font-size:15px;color:var(--ink-soft)}
+.paid .btns{display:flex;flex-wrap:wrap;gap:8px}
+.paid button{border:2px dashed var(--ink-soft);background:transparent;border-radius:10px;padding:6px 12px;color:var(--ink-soft);font-size:13px;cursor:not-allowed;line-height:1.3}
+.paid button b{color:var(--ink);font-family:var(--f-disp);font-weight:400;font-size:15px}
+.foot{font-size:13px;color:var(--ink-soft);text-align:center;margin:0}
+
+/* ---------- 막 ---------- */
+.curtain{
+  position:fixed;top:0;bottom:0;width:51%;z-index:20;transition:transform .7s cubic-bezier(.75,0,.15,1.02);
+  background:
+    linear-gradient(rgba(60,0,0,.25),transparent 18%,transparent 75%,rgba(60,0,0,.35)),
+    repeating-linear-gradient(90deg,var(--tomato-dk) 0 5px,var(--tomato) 5px 18px,var(--tomato-lt) 18px 25px,var(--tomato) 25px 36px,var(--tomato-dk) 36px 42px);
+}
+.curtain.l{left:0;box-shadow:inset -10px 0 18px rgba(60,0,0,.35)}
+.curtain.r{right:0;box-shadow:inset 10px 0 18px rgba(60,0,0,.35)}
+body.open .curtain.l{transform:translateX(-96%)}
+body.open .curtain.r{transform:translateX(96%)}
+.valance{
+  position:fixed;left:0;right:0;top:0;height:34px;z-index:21;pointer-events:none;
+  background:
+    radial-gradient(circle at 20px 0,var(--tomato-dk) 19px,transparent 20px) 0 12px/40px 24px repeat-x,
+    linear-gradient(var(--tomato-dk),var(--tomato) 12px);
+}
+.valance::after{content:"";position:absolute;left:0;right:0;top:10px;height:3px;background:var(--bulb);opacity:.9}
+
+/* 출연 신청서 */
+.entry{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:40px 16px 16px;overflow-y:auto;transition:opacity .25s,visibility .25s}
+body.open .entry{opacity:0;visibility:hidden}
+.card{
+  width:100%;max-width:440px;box-sizing:border-box;border-radius:22px;border:8px dotted var(--bulb);
+  background:linear-gradient(var(--paper),var(--paper)) padding-box,linear-gradient(var(--plum),var(--plum)) border-box;
+  box-shadow:0 0 0 4px var(--ink),0 22px 40px rgba(40,0,0,.4);padding:16px 18px 14px;
+  animation:bulbs 1s steps(1) infinite;
+}
+.card h1{font-family:var(--f-disp);font-weight:400;font-size:32px;line-height:1.1;margin:0;color:var(--tomato-dk);text-align:center}
+.card .sub{margin:4px 0 12px;font-size:13px;text-align:center;color:var(--ink-soft);text-wrap:balance}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}
+.fields .full{grid-column:1/-1}
+.fl{display:grid;gap:3px;min-width:0}
+.fl>span,.legend{font-size:12px;color:var(--ink-soft)}
+.fl input[type=date],.fl input[type=time],.fl input[type=text],textarea{
+  width:100%;box-sizing:border-box;border:2px solid var(--ink);border-radius:10px;padding:6px 8px;background:#fff;color:var(--ink);
+}
+.fl input:disabled{opacity:.45}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+.seg{display:flex;gap:6px}
+.seg label{flex:1;cursor:pointer}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:block;text-align:center;border:2px solid var(--ink);border-radius:10px;padding:5px 0;background:#fff}
+.seg input:checked+span{background:var(--ink);color:var(--paper)}
+.seg input:focus-visible+span{outline:3px solid var(--tomato);outline-offset:1px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:2px solid var(--ink);border-radius:999px;background:#fff;padding:4px 10px;font-size:13px;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+textarea{resize:none;height:54px}
+.count{font-size:11px;color:var(--ink-soft);text-align:right}
+.err{color:#c0183a;font-size:13px;min-height:1.2em;margin:6px 0 0;text-align:center}
+.card .go{width:100%;margin-top:6px;font-size:21px;padding:10px}
+.card .fine{font-size:11px;color:var(--ink-soft);text-align:center;margin:8px 0 0}
+
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:40;pointer-events:none;image-rendering:pixelated}
+
+@media (max-width:520px){ .card{padding:14px 14px 12px} .brand{font-size:15px} }
+@media (prefers-reduced-motion:reduce){
+  .curtain,.entry{transition:none}
+  .stage::before,.board,.card,.judge.think canvas,.bubble,.board.flash{animation:none}
+  .qs i{animation:none;opacity:1}
+}
+</style>
+</head>
+<body>
+
+
+<main class="stage">
+  <div class="wrap">
+    <section class="board" id="board" aria-label="전광판" aria-live="polite">
+      <div class="top">
+        <span class="brand">삼인삼색 운세 오디션</span>
+        <button class="btn small" id="again" type="button">다시 심사받기</button>
+      </div>
+      <h2 class="q" id="q">올해 이직해도 될까?</h2>
+      <div class="score-box">
+        <div class="score" aria-label="점수"><span class="so" id="so">?</span><span class="colon"> : </span><span class="sx" id="sx">?</span></div>
+        <div class="grade" id="grade"><span id="gradeTxt">WAIT</span></div>
+      </div>
+      <p class="status" id="status"></p>
+    </section>
+
+    <section class="set" aria-label="심사위원석">
+      <div class="judges" id="judges"></div>
+      <div class="desk">
+        <div class="plates" id="plates"></div>
+        <div class="cells" id="cells" aria-label="한 줄 평"></div>
+      </div>
+    </section>
+
+    <section class="paid">
+      <p>왜 O를 들었는지, 왜 X를 들었는지 궁금하다면 심사위원의 상세 풀이를 열어보세요.</p>
+      <div class="btns">
+        <button type="button" disabled><b>한 명 상세 풀이</b> 1,000원 · 준비 중</button>
+        <button type="button" disabled><b>세 명 전부</b> 2,500원 · 준비 중</button>
+      </div>
+    </section>
+
+    <p class="foot">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.</p>
+  </div>
+</main>
+
+<div class="curtain l" aria-hidden="true"></div>
+<div class="curtain r" aria-hidden="true"></div>
+<div class="valance" aria-hidden="true"></div>
+
+<div class="entry" id="entryWrap">
+  <form class="card" id="entry" novalidate>
+    <h1>삼인삼색 운세 오디션</h1>
+    <p class="sub">한국의 사주, 중국의 자미두수, 인도의 베딕 점성술 — 세 명이 한 번에 심사</p>
+    <div class="fields">
+      <label class="fl"><span>생년월일 (양력)</span><input type="date" id="birth" min="1900-01-01" required></label>
+      <label class="fl"><span>태어난 시각</span><input type="time" id="btime"></label>
+      <label class="chk full"><input type="checkbox" id="noTime"> 태어난 시각을 몰라요</label>
+      <div class="fl"><span class="legend" id="gLbl">성별</span>
+        <div class="seg" role="radiogroup" aria-labelledby="gLbl">
+          <label><input type="radio" name="gender" id="gF" value="여성" checked><span>여성</span></label>
+          <label><input type="radio" name="gender" id="gM" value="남성"><span>남성</span></label>
+        </div>
+      </div>
+      <label class="fl"><span>태어난 곳</span><input type="text" id="place" maxlength="30" placeholder="예: 부산"></label>
+      <div class="fl full"><span class="legend">물어보고 싶은 것</span>
+        <div class="chips" id="chips"></div>
+      </div>
+      <div class="fl full" id="customWrap" hidden>
+        <textarea id="custom" maxlength="60" placeholder="예: 이번 여름에 가게를 열어도 될까?" aria-label="직접 쓴 질문"></textarea>
+        <div class="count"><span id="cnt">0</span> / 60</div>
+      </div>
+    </div>
+    <p class="err" id="err" role="alert"></p>
+    <button class="btn go" id="go" type="submit">질문 전달하기</button>
+    <p class="fine">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.</p>
+  </form>
+</div>
+
+<canvas id="fx" hidden></canvas>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const QUESTIONS = ['올해 이직해도 될까?','올해 연애운 좋을까?','올해 돈이 모일까?','지금 시작하려는 일, 잘 될까?','직접 쓰기'];
+const JUDGES = [
+  {id:'saju', name:'사주 할머니',  sys:'한국 · 사주팔자',   shout:'아이고, 택도 없다!',    phase:0,   period:3.1},
+  {id:'jami', name:'자미두수 도사', sys:'중국 · 자미두수',   shout:'不可! 절대 불가하오!',   phase:1.3, period:3.9},
+  {id:'vedic',name:'베딕 구루',    sys:'인도 · 베딕 점성술', shout:'노노노… 평온하게, 친구여', phase:2.2, period:2.6},
+];
+
+/* ================= 손으로 찍은 스프라이트 (32×44, 왼쪽 절반을 좌우 반전) =================
+   o 외곽선 · s/S 피부/그늘 · w/W/H 머리(모자·터번)/그늘/빛 · c/C/l 옷/그늘/깃
+   k/K 모자 · g 금 · r 빨강 · b/B 수염 · j 옥 · e 에메랄드 · p 깃털 · y 노랑 */
+const BODY = [
+  "...........oSSSS",
+  "........oooollSS",
+  "......oocccclllS",
+  ".....occccccclll",
+  "....occcccccccll",
+  "....occcccccccCl",
+  "...occcccccccccl",
+  "...occcccccccccl",
+  "..occcccccccccCl",
+  "..oCcccccccccccl",
+  "..oCcccccccccccl",
+  ".oCccccccccccccl",
+  ".oCccccccccccccl",
+  ".oCccccccccccccl",
+  ".oCccccccccccccl",
+  "oCcccccccccccccl",
+  "oCcccccccccccccl",
+  "oCcccccccccccccl",
+  "oCcccccccccccccl",
+  "oCcccccccccccccl",
+];
+const FACE_LOW = [ // 공통 얼굴 아래쪽 (행 19~23)
+  "....oSssssssssss",
+  "....oSssssssssss",
+  ".....oSsssssssss",
+  "......ooSsssssss",
+  "........oooooooo",
+];
+const HEAD_SAJU = [
+  "................",
+  "................",
+  "............oooo",
+  "..........ooHHHw",
+  ".........oHHwwww",
+  ".........oHwwwww",
+  "..........oWWWWW",
+  "......oooooooooo",
+  ".....oHHHHwwwwwW",
+  "....oHHwwwwwwwwW",
+  "...oHwwwwwwwwwwW",
+  "...oHwwwwwwwWWWW",
+  "...owwwwWWWSSSSS",
+  "...owwwWSsssssss",
+  "...owwWSssssssss",
+  "...owwSsssssssss",
+  "...owWssssssssss",
+  "...owWssssssssss",
+  "...oWSssssssssss",
+];
+const HEAD_JAMI = [
+  "................",
+  "................",
+  "................",
+  "................",
+  "........oooooooo",
+  "........oKKKkkkk",
+  "........oKkkkkkg",
+  "ooooooookkkkkggr",
+  "okKKKKKkkkkkkkgg",
+  "ooooooookkkkkkkk",
+  "...ooooooooooooo",
+  "...oKKKKKKKKKKKK",
+  "...okkkkkkkkkkkk",
+  "...owWSSSSSSSSSS",
+  "...owSssssssssss",
+  "...owSssssssssss",
+  "...oWsssssssssss",
+  "...oWsssssssssss",
+  "...oSsssssssssss",
+];
+const HEAD_VEDIC = [
+  "................",
+  "................",
+  "...........ooooo",
+  "........oooHHHHw",
+  "......ooHHHwwwww",
+  ".....oHHwwwwWwww",
+  "....oHwwwwWWwwww",
+  "....oHwwWWwwwwwW",
+  "...oHwwWwwwwwWWw",
+  "...owwWwwwwwWWww",
+  "...owWwwwWWwwwww",
+  "...oWWWWwwwwwwww",
+  "...oSSSSSSSSSSSS",
+  "...oSsssssssssss",
+  "...oSsssssssssss",
+  "...oSsssssssssss",
+  "...oSsssssssssss",
+  "...oSsssssssssss",
+  "...oSsssssssssss",
+];
+const BEARD_J = {x:8,y:21,mirror:true,rows:[
+  "...oobbb","..obbbbb","..obBbbb","...obbbb","...obBbb","....obbb","....obbb",".....obb",".....obB","......ob","......ob",".......o"]};
+const MUS_J = {x:9,y:19,mirror:true,rows:["...BBBB","..B....",".B.....","B......"]};
+const BEARD_V = {x:6,y:20,mirror:true,rows:[
+  "oo........","obbo......","obbbboo...","obbbbbbbbb","obbBbbbbbb",".obbbbBbbb",".obbBbbbbb","..obbbbbbb","..obbbbBbb","...obbbbbb","....oobbbb","......oooo"]};
+const MUS_V = {x:9,y:19,mirror:true,rows:["..obbbb",".obbb..","obb...."]};
+
+const SK  = {o:'#3a2233', s:'#f6c9a0', S:'#e0a47c'};
+const SKV = {o:'#3a2233', s:'#c98d5e', S:'#a86f45'};
+const CHARS = {
+  saju:{ head:HEAD_SAJU, pal:{...SK, w:'#ecebf3',W:'#bdbacd',H:'#ffffff', c:'#f4f1fa',C:'#cfc8e2',l:'#ffffff', g:'#e7b84a',j:'#7cc47f'},
+    patches:[{x:8,y:4,rows:["jggggggggggggggj"]}], top:[] },
+  jami:{ head:HEAD_JAMI, pal:{...SK, w:'#2b2535',W:'#1c1824',k:'#2b2535',K:'#4a4160', g:'#f0c24a',r:'#d23a3a', c:'#d0434b',C:'#9a2530',l:'#f0c24a', b:'#7a7085',B:'#3f3848'},
+    patches:[BEARD_J], top:[MUS_J] },
+  vedic:{ head:HEAD_VEDIC, pal:{...SKV, w:'#f5902e',W:'#cf6a16',H:'#ffc071', g:'#f0c24a',e:'#27b36a',p:'#ffffff',r:'#d8263a',y:'#f4d35e', c:'#f39a3d',C:'#c96f1c',l:'#ffd08a', b:'#ffffff',B:'#d6d6e4'},
+    patches:[BEARD_V,
+      {x:13,y:5,rows:["..oo..",".oggo.","ogeego","ogeego",".oggo.","..oo.."]},
+      {x:17,y:0,rows:["....o","...op","..op.",".op..","op..."]},
+      {x:15,y:12,rows:["rr","rr","yy"]}], top:[MUS_V] },
+};
+const DIM={H:'w',h:'s'}; // 오른쪽 절반은 빛을 받지 않음
+function paint(x,rows,pal,ox,oy,mirror){
+  rows.forEach((row,y)=>{
+    const full=mirror?row+[...row].reverse().map(ch=>mirror==='dim'?(DIM[ch]||ch):ch).join(''):row;
+    [...full].forEach((ch,i)=>{ if(ch!=='.'&&pal[ch]){ x.fillStyle=pal[ch]; x.fillRect(ox+i,oy+y,1,1); } });
+  });
+}
+function bake(id){
+  const d=CHARS[id], mk=()=>{ const c=document.createElement('canvas'); c.width=32; c.height=44; return c; };
+  const base=mk(), top=mk(), bx=base.getContext('2d'), tx=top.getContext('2d');
+  paint(bx,[...d.head,...FACE_LOW,...BODY],d.pal,0,0,'dim');
+  d.patches.forEach(p=>paint(bx,p.rows,d.pal,p.x,p.y,p.mirror));
+  if(id==='saju'){ bx.fillStyle='#d9d3ea'; bx.fillRect(17,29,5,2); bx.fillRect(18,31,2,5); bx.fillRect(21,31,1,4); }
+  d.top.forEach(p=>paint(tx,p.rows,d.pal,p.x,p.y,p.mirror));
+  return {base,top,pal:d.pal};
+}
+
+/* ================= 표정·팔·효과 (캔버스 48×64, 스프라이트는 (8,18)에 놓임) ================= */
+const OL='#3a2233', MOUTH='#8a3a3a', TONGUE='#e0566c', WHITE='#ffffff', BLUSH='#ff9aa8';
+const BROW={saju:'#9b95b2', jami:'#2b2535', vedic:'#ffffff'};
+const WOOD='#a8743f';
+let g, SX=8, SY=18;
+const R=(x,y,w,h,c)=>{ g.fillStyle=c; g.fillRect(Math.round(x),Math.round(y),w,h); };
+const P=(pts,c)=>pts.forEach(([x,y])=>R(SX+x,SY+y,1,1,c));      // 스프라이트 좌표 점찍기
+const PR=(x,y,w,h,c)=>R(SX+x,SY+y,w,h,c);                         // 스프라이트 좌표 사각형
+function E(cx,cy,rx,ry,c){ g.fillStyle=c; for(let dy=-ry;dy<=ry;dy++){ const hw=Math.round(rx*Math.sqrt(Math.max(0,1-(dy*dy)/((ry+.5)*(ry+.5))))); g.fillRect(Math.round(cx)-hw,Math.round(cy)+dy,hw*2+1,1); } }
+function L(x0,y0,x1,y1,r,c){ const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0))||1; for(let i=0;i<=n;i++){ const x=x0+(x1-x0)*i/n, y=y0+(y1-y0)*i/n; R(x-r,y-r,2*r+1,2*r+1,c); } }
+function G(rows,x,y,c){ rows.forEach((row,j)=>[...row].forEach((ch,i)=>{ if(ch==='#') R(x+i,y+j,1,1,c); })); }
+function GO(rows,x,y,c){ for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]) G(rows,x+dx,y+dy,OL); G(rows,x,y,c); }
+const QMARK=['.###.','##.##','...##','..##.','..#..','.....','..#..'];
+const VEIN =['.#.#.','##.##','.....','##.##','.#.#.'];
+const DROP =['.#.','###','###','.#.'];
+
+function arm(x0,y0,x1,y1,pal){ L(x0,y0,x1,y1,2,OL); L(x0,y0,x1,y1,1,pal.c); L(x0-1,y0,x1-1,y1,0,pal.l==='#ffffff'?'#ffffff':pal.c); }
+function hand(x,y,pal){ R(x-2,y-2,5,5,OL); R(x-1,y-1,3,3,pal.s); R(x+1,y+1,1,1,pal.S); }
+function sign(hx,hy,v){
+  L(hx,hy-7,hx,hy-2,0,OL); R(hx-1,hy-7,1,5,WOOD);
+  R(hx-6,hy-19,13,12,OL); R(hx-5,hy-18,11,10,'#fff8e6'); R(hx-5,hy-9,11,1,'#ecdcb8');
+  const cy=hy-14;
+  if(v==='O'){ E(hx,cy,3,3,'#1fae5f'); E(hx,cy,1,1,'#fff8e6'); }
+  else { for(let i=-3;i<=3;i++){ R(hx+i,cy+i,2,1,'#e0283c'); R(hx-i,cy+i,2,1,'#e0283c'); } }
+}
+
+function eyes(kind,look,id){
+  const L1=8+look, R1=20+look;
+  if(kind==='idle'&&id==='vedic'){ P([[9,17],[10,17],[8,16],[11,16],[21,17],[22,17],[20,16],[23,16]],OL); return; } // 고요히 감은 눈
+  if(kind==='idle'&&id==='saju'){ PR(L1,16,3,2,OL); P([[8,15]],OL); PR(R1+1,16,3,2,OL); P([[23,15]],OL); P([[L1+1,16],[R1+2,16]],WHITE); return; } // 치켜 뜬 눈
+  if(kind==='idle'||kind==='think'){ const u=kind==='think'?1:0; PR(L1+1,15-u,2,3,OL); PR(R1+1,15-u,2,3,OL); P([[L1+1,15-u],[R1+1,15-u]],WHITE); return; }
+  if(kind==='blink'){ PR(8,17,4,1,OL); PR(20,17,4,1,OL); return; }
+  if(kind==='happy'){ P([[8,17],[9,16],[10,16],[11,17],[20,17],[21,16],[22,16],[23,17]],OL); return; }
+  if(kind==='angry'){ PR(8,16,4,2,OL); PR(20,16,4,2,OL); P([[9,16],[22,16]],WHITE); return; }
+  if(kind==='panic'){ PR(8,15,4,4,OL); PR(9,16,2,2,WHITE); PR(20,15,4,4,OL); PR(21,16,2,2,WHITE); P([[9+(look>0),16],[21+(look>0),16]],OL); }
+}
+function brows(kind,id){
+  const c=BROW[id];
+  if(kind==='angry'||(id==='saju'&&(kind==='idle'||kind==='blink'))){ P([[8,12],[9,12],[10,13],[11,13],[23,12],[22,12],[21,13],[20,13]],c); }
+  else if(kind==='panic'){ P([[8,14],[9,13],[10,13],[11,12],[23,14],[22,13],[21,13],[20,12]],c); }
+  else if(kind==='think'){ PR(8,12,4,1,c); PR(20,14,4,1,c); }
+  else if(kind==='happy'){ PR(8,12,4,1,c); PR(20,12,4,1,c); }
+  else if(id==='vedic'){ P([[8,14],[9,13],[10,13],[11,13],[20,13],[21,13],[22,13],[23,14]],c); }
+  else { PR(8,13,4,1,c); PR(20,13,4,1,c); }
+}
+function mouth(kind,id){
+  if(kind==='happy'){ PR(13,19,6,3,OL); PR(14,19,4,1,WHITE); PR(14,20,4,1,TONGUE); }
+  else if(kind==='angry'){ PR(13,19,6,3,OL); PR(14,20,4,1,WHITE); PR(16,20,1,1,OL); }
+  else if(kind==='panic'){ PR(14,19,4,4,OL); PR(15,20,2,2,TONGUE); }
+  else if(kind==='think'){ PR(15,20,2,2,OL); }
+  else if(id==='saju'){ PR(14,20,3,1,MOUTH); PR(17,19,2,1,MOUTH); }
+  else { PR(14,20,4,1,MOUTH); P([[13,19],[18,19]],MOUTH); }
+}
+
+function drawJudge(j,t){
+  g=j.ctx; g.setTransform(1,0,0,1,0,0); g.clearRect(0,0,48,64);
+  const tt=REDUCED?0:t, st=j.state, v=j.verdict, id=j.id, ph=tt+j.phase, pal=j.spr.pal;
+  const f=rate=>Math.floor(ph*rate);
+  let ox=0, oy=0;
+  if(st==='idle'){ oy=f(1.6)%2; ox=[0,1,0,-1][f(.8)%4]; }
+  if(st==='think') oy=f(3)%2;
+  if(st==='raise1') oy=-1;
+  if(st==='raise2'&&v==='O') oy=-[0,1,2,1][f(10)%4];
+  if(st==='raise2'&&v==='X'&&!REDUCED) ox=f(28)%2?1:-1;
+  if(st==='panic') oy=-[0,2,4,5,4,2][f(14)%6];
+  g.setTransform(1,0,0,1,ox,oy);
+
+  let face='idle', look=0;
+  if(st==='idle'){ if(!REDUCED&&(ph%j.period)<.15) face='blink'; look=[0,0,1,0,0,-1][f(.7)%6]; }
+  if(st==='think'){ face='think'; look=[-1,1][f(2)%2]; }
+  if(st==='raise2') face=v==='O'?'happy':'angry';
+  if(st==='panic') face='panic';
+
+  let rh=[37,57], lh=[11,57];
+  if(st==='idle'){
+    if(id==='saju') lh=[12,55-(f(7)%2)*2];                        // 책상을 톡톡
+    if(id==='jami') lh=[20,43+[0,1,3,1][f(3)%4]];                  // 수염 쓸기
+    if(id==='vedic'){ const a=ph*3; lh=[18+Math.round(Math.cos(a)),49+Math.round(Math.sin(a))]; } // 염주 굴리기
+  }
+  if(st==='think') rh=[30,41+f(4)%2];                               // 턱 괴기
+  if(st==='raise1') rh=[41,36];
+  if(st==='raise2') rh = v==='O' ? [39+[0,1,0,-1][f(6)%4],21] : [39+(f(20)%2?1:-1),21+f(20)%2];
+  if(st==='panic'){ const pa=f(5.5)%2; rh=pa?[39,21]:[41,34]; lh=pa?[11,56]:[8,22]; }
+
+  g.drawImage(j.spr.base,SX,SY);
+  if(id==='vedic') for(let k=0;k<=10;k++){ const a=Math.PI*(.1+.8*k/10), x=24+Math.cos(a)*10, y=44+Math.sin(a)*9; R(x,y,2,2,'#6b3a1c'); R(x,y,1,1,'#b07a4a'); }
+  brows(face==='blink'?'idle':face,id);
+  eyes(face,look,id);
+  if(face==='happy') { PR(5,18,2,1,BLUSH); PR(25,18,2,1,BLUSH); }
+  mouth(face==='blink'?'idle':face,id);
+  g.drawImage(j.spr.top,SX,SY);
+
+  arm(12,45,lh[0],lh[1],pal); hand(lh[0],lh[1],pal);
+  arm(36,45,rh[0],rh[1],pal);
+  if(st==='raise1'||st==='raise2'||st==='panic') sign(rh[0],rh[1],v);
+  hand(rh[0],rh[1],pal);
+
+  if(st==='think') GO(QMARK,40,4+f(3)%2,'#ffd23f');
+  if(st==='raise2'&&v==='X'&&(REDUCED||f(4)%2===0)) GO(VEIN,33,30,'#ff3b4a');
+  if(st==='panic'){ GO(VEIN,33,30,'#ff3b4a');
+    [[8,30],[38,32]].forEach(([x,y],k)=>GO(DROP,x,y+((tt*18+k*5)%9),'#8fdcff')); }
+}
+
+/* ================= 무대 구성 ================= */
+const judgesEl=$('#judges'), deskEl=$('#plates'), reviewsEl=$('#cells');
+JUDGES.forEach(j=>{
+  const col=document.createElement('div'); col.className='judge';
+  col.innerHTML=`<div class="qs" aria-hidden="true"><i>?</i><i>?</i><i>?</i><i>?</i><i>?</i></div><div class="bubble" hidden></div><canvas width="48" height="64" role="img" aria-label="${j.name}"></canvas>`;
+  judgesEl.append(col);
+  j.col=col; j.bubble=col.querySelector('.bubble'); j.bubble.textContent=j.shout;
+  j.ctx=col.querySelector('canvas').getContext('2d'); j.state='idle'; j.verdict=null; j.spr=bake(j.id);
+  const plate=document.createElement('div'); plate.className='plate';
+  plate.innerHTML=`<b>${j.name}</b><small>${j.sys}</small>`; deskEl.append(plate);
+  const row=document.createElement('div'); row.className='cell';
+  row.innerHTML=`<div class="lamp" aria-hidden="true"></div><div><div class="who">${j.name}</div><div class="line wait">막이 열리면 심사를 시작해요.</div></div>`;
+  reviewsEl.append(row); j.mark=row.querySelector('.lamp'); j.line=row.querySelector('.line');
+});
+function setState(j,s){ j.state=s; j.col.classList.toggle('think',s==='think'); j.bubble.hidden=s!=='panic'; }
+
+const t0=performance.now(); let last=-1e9;
+function loop(now){
+  if(REDUCED||now-last>=80){ last=now; const t=(now-t0)/1000; JUDGES.forEach(j=>drawJudge(j,t)); }
+  if(!REDUCED) requestAnimationFrame(loop);
+}
+REDUCED ? loop(t0) : requestAnimationFrame(loop);
+const redraw=()=>{ if(REDUCED) loop(performance.now()); };
+
+// "심사 중." → ".." → "..." 점 진행
+let dotN=1;
+const dots=(el,base)=>{ el.dataset.dots=base; el.textContent=base+'.'.repeat(dotN); };
+const undots=(el,text)=>{ delete el.dataset.dots; el.textContent=text; };
+setInterval(()=>{ dotN=dotN%3+1; document.querySelectorAll('[data-dots]').forEach(el=>el.textContent=el.dataset.dots+'.'.repeat(dotN)); },400);
+
+/* ================= 입력 폼 ================= */
+const chipsEl=$('#chips'); let chosen=QUESTIONS[0];
+QUESTIONS.forEach(q=>{
+  const b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=q;
+  b.setAttribute('aria-pressed',q===chosen); b.onclick=()=>{ chosen=q;
+    chipsEl.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c===b));
+    $('#customWrap').hidden=q!=='직접 쓰기'; if(q==='직접 쓰기') $('#custom').focus(); };
+  chipsEl.append(b);
+});
+$('#custom').addEventListener('input',e=>$('#cnt').textContent=e.target.value.length);
+$('#noTime').addEventListener('change',e=>{ $('#btime').disabled=e.target.checked; });
+const todayISO=()=>{ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+$('#birth').max=todayISO();
+
+$('#entry').addEventListener('submit',e=>{
+  e.preventDefault();
+  const birth=$('#birth').value, q=chosen==='직접 쓰기'?$('#custom').value.trim():chosen;
+  if(!birth){ $('#err').textContent='생년월일을 넣어 주세요.'; $('#birth').focus(); return; }
+  if(birth>todayISO()){ $('#err').textContent='생년월일이 오늘보다 뒤예요. 날짜를 다시 확인해 주세요.'; return; }
+  if(!q){ $('#err').textContent='심사받을 질문을 적어 주세요.'; $('#custom').focus(); return; }
+  $('#err').textContent='';
+  run({birth, time:$('#noTime').checked?'':$('#btime').value, gender:document.querySelector('input[name=gender]:checked').value,
+       place:$('#place').value.trim(), q, today:todayISO()});
+});
+
+$('#again').addEventListener('click',()=>{
+  document.body.classList.remove('open');
+  JUDGES.forEach(j=>setState(j,'idle')); redraw();
+  setTimeout(()=>$('#go').focus(),REDUCED?0:500);
+});
+
+/* ================= 판정 ================= */
+function normalize(r){
+  const out={};
+  for(const j of (r&&Array.isArray(r.judges)?r.judges:[])){
+    const v=String(j&&j.verdict||'').toUpperCase();
+    if(JUDGES.some(x=>x.id===j.id)&&(v==='O'||v==='X')&&typeof j.line==='string') out[j.id]={verdict:v,line:j.line.trim().slice(0,140)};
+  }
+  if(Object.keys(out).length<3) throw {code:'bad_shape'};
+  return out;
+}
+
+// AI를 못 쓰는 환경용 모의 판정 (입력값 해시로 고정)
+const MOCK={
+  saju:{O:['네 일간이 올해 불기운 타고 똑바로 섰다. 기회 앞에서 또 재기만 하면 그건 운 탓 아이고 니 탓이다.','재성이 제 발로 들어왔는데 뭘 망설이노. 단, 말만 번지르르한 사람 하나는 가을 전에 걸러내라.'],
+        X:['오행이 금으로 쏠려 지금 나서면 헛심만 쓴다. 급한 건 니 마음이지 니 팔자가 아이다.','올해 세운이 니 일간을 정통으로 친다. 동짓달 넘기고 다시 온나, 그때 해 줄 말이 있다.']},
+  jami:{O:['「水到渠成」 관록궁에 화록이 들었소. 여름만 조심하시오.','「順水推舟」 명궁 천부가 녹존을 만났소. 귀인은 한 명이오.'],
+        X:['「欲速則不達」 무곡이 화기를 맞았소. 봄을 기다리시오.','「塞翁失馬」 재백궁에 겁공이 비치오. 구멍부터 막으시오.']},
+  vedic:{O:['목성이 10하우스를 고요히 지나며 문이 열리고 있습니다, 친구여. 토성이 움직이는 한 달만 숨을 고르며 지켜보십시오.','금성 다샤의 흐름이 달 별자리를 부드럽게 감쌉니다, 친구여. 수성 역행의 며칠만 마음을 고요히 두면 됩니다.'],
+        X:['토성이 달 위를 지나는 사데 사티이니, 멈춤도 수행입니다, 친구여. 목성이 자리를 옮기는 그 달에 다시 앉아 봅시다.','라후 다샤의 안개가 잠시 길을 가립니다, 친구여. 초승달이 뜨는 어느 날을 고르면 흐름이 달라질 것입니다.']},
+};
+function hash(s){ let h=2166136261; for(const c of s){ h^=c.codePointAt(0); h=Math.imul(h,16777619); } return h>>>0; }
+function mock(p){ const h=hash(JSON.stringify(p)), out={};
+  JUDGES.forEach((j,i)=>{ const v=(h>>(i*3))&1?'O':'X'; out[j.id]={verdict:v,line:MOCK[j.id][v][(h>>(i*3+1))&1]}; }); return out; }
+
+const API_URL='https://samin-samsaek-judge.mingou0131.workers.dev';
+async function ask(p){
+  try{
+    const r=await fetch(API_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(p),signal:AbortSignal.timeout(45000)});
+    if(r.status===429) return {res:mock(p),note:'심사 요청이 너무 잦아요. 1분 뒤에 다시 해 보세요. 이번 판정은 연습 판정이에요.'};
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return {res:normalize(await r.json()),note:''};
+  }catch(e){
+    return {res:mock(p),note:'심사위원 연결이 잠시 끊겨 연습 판정을 보여드려요. 잠시 뒤 다시 해 보세요.'};
+  }
+}
+
+const wait=ms=>new Promise(r=>setTimeout(r,REDUCED?0:ms));
+let running=false;
+async function run(p){
+  if(running) return; running=true;
+  const again=$('#again'); again.disabled=true; dots(again,'심사 중');
+  $('#q').textContent=p.q;
+  $('#so').textContent='?'; $('#sx').textContent='?';
+  const grade=$('#grade'); grade.className='grade'; dots($('#gradeTxt'),'');
+  dots($('#status'),'세 심사위원이 명반과 차트를 펼치는 중');
+  JUDGES.forEach(j=>{ setState(j,'think'); j.verdict=null; j.mark.className='lamp'; j.mark.textContent='?';
+    j.line.className='line wait'; dots(j.line,'심사 중'); });
+  document.body.classList.add('open'); redraw();
+
+  const [{res,note}] = await Promise.all([ask(p), wait(2200)]);
+
+  for(const j of JUDGES){
+    j.verdict=res[j.id].verdict; setState(j,'raise1'); redraw();
+    await wait(170); setState(j,'raise2'); redraw();
+    j.mark.className='lamp '+(j.verdict==='O'?'o':'x'); j.mark.textContent=j.verdict;
+    j.line.className='line'; undots(j.line,res[j.id].line);
+    await wait(650);
+  }
+  const o=JUDGES.filter(j=>j.verdict==='O').length, x=3-o;
+  $('#so').textContent=o; $('#sx').textContent=x;
+  const G2={3:['EXCELLENT','good'],2:['GOOD','good'],1:['NOT<br>GOOD','bad'],0:['BAD','bad']}[o];
+  grade.className='grade '+G2[1]; delete $('#gradeTxt').dataset.dots; $('#gradeTxt').innerHTML=G2[0];
+  undots($('#status'),note);
+  if(o===3) fireworks();
+  if(o===0){ JUDGES.forEach(j=>setState(j,'panic')); redraw();
+    const b=$('#board'); b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+  again.disabled=false; undots(again,'다시 심사받기'); running=false;
+}
+
+function fireworks(){
+  if(REDUCED) return;
+  const c=$('#fx'); c.hidden=false;
+  const w=c.width=Math.ceil(innerWidth/4), h=c.height=Math.ceil(innerHeight/4), x=c.getContext('2d');
+  const cols=['#ffd23f','#2fcf7a','#ff5c8a','#6ad1ff','#b69cff']; let ps=[], n=0; const start=performance.now();
+  const burst=()=>{ const bx=w*(.12+Math.random()*.76), by=h*(.1+Math.random()*.4), col=cols[n%cols.length];
+    for(let i=0;i<34;i++){ const a=i/34*Math.PI*2, s=.5+Math.random()*1.1; ps.push({x:bx,y:by,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:55+Math.random()*30,c:col}); } n++; };
+  (function step(now){
+    if(n<9&&now-start>n*300) burst();
+    x.clearRect(0,0,w,h); ps=ps.filter(p=>--p.l>0);
+    for(const p of ps){ p.x+=p.vx; p.y+=p.vy; p.vy+=.025; p.vx*=.98; if(p.l>12||p.l%4<2){ x.fillStyle=p.c; x.fillRect(p.x|0,p.y|0,1,1);} }
+    if(ps.length||n<9) requestAnimationFrame(step); else c.hidden=true;
+  })(start);
+}
+
+})();
+</script>
+
+</body>
+</html>
