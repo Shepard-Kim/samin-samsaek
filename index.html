@@ -17,7 +17,7 @@
 <title>삼인삼색 운세 오디션</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gowun+Dodum&family=Press+Start+2P&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;700&family=Press+Start+2P&display=swap">
 <style>
 /* Layout: 화면 전체가 하나의 쇼 무대. 천장에 매달린 전구 전광판 → 햇살 무늬 배경 앞의 세 심사위원 → 책상 앞판이 곧 한 줄 평 화면.
    한 줄 평은 각 심사위원 바로 아래에 붙어 "누가 무슨 말을 했는지"가 한눈에 이어진다. 좁은 화면에선 한 줄 평만 세로로 쌓인다. */
@@ -200,6 +200,90 @@ button,input,textarea{font:inherit;color:inherit}
 .share-in img{width:100%;max-height:70vh;object-fit:contain;border-radius:12px;border:4px solid var(--paper);background:var(--cream)}
 .share-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .share-msg{margin:0;min-height:1.2em;color:var(--paper);font-size:14px;text-align:center}
+
+/* ---------- 3인 전체 총운 ---------- */
+.total-cta{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 16px;align-items:center;padding:14px 16px;border-radius:16px;border:4px solid var(--ink);background:var(--plum);color:var(--paper)}
+.total-cta b{font-family:var(--f-disp);font-weight:400;font-size:22px;color:var(--amber)}
+.total-cta p{margin:2px 0 0;font-size:14px;color:#d9cfee}
+@media (max-width:560px){ .total-cta{grid-template-columns:minmax(0,1fr)} .total-cta .btn{width:100%} }
+.tform{display:grid;gap:10px}
+.tlead{margin:0;font-size:15px;color:var(--ink-soft)}
+.tform .person{border:2px dashed rgba(43,33,64,.25);border-radius:14px;padding:10px}
+.tform select{width:100%;height:42px;box-sizing:border-box;border:2px solid var(--ink);border-radius:10px;padding:6px 8px;background:#fff;color:var(--ink);font-size:16px}
+.tbox{border:3px solid var(--ink);border-radius:16px;background:#fff;padding:14px 16px;display:grid;gap:10px}
+.tbox h3{margin:0;font-family:var(--f-disp);font-weight:400;font-size:20px}
+.tbox p{margin:0;font-size:15px;line-height:1.55}
+.tflag{margin:0;padding:8px 10px;border-radius:10px;background:#fff1ee;color:var(--tomato-dk);font-size:14px}
+.tcand{display:grid;gap:8px}
+.tcand label{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;padding:10px;border:2px solid var(--ink);border-radius:12px;cursor:pointer}
+.tcand label:has(input:checked){background:var(--cream);box-shadow:0 0 0 3px var(--amber)}
+.tcand .gz{font-family:var(--f-disp);font-size:20px;letter-spacing:.04em}
+.tcand small{display:block;color:var(--ink-soft);font-size:13px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.steps li{display:flex;gap:10px;align-items:center;font-size:15px;color:var(--ink-soft)}
+.steps li::before{content:"";width:14px;height:14px;border-radius:50%;border:3px solid var(--ink-soft);flex:none}
+.steps li.doing{color:var(--ink)} .steps li.doing::before{border-color:var(--amber);background:var(--bulb);animation:blink .8s steps(1) infinite}
+.steps li.done{color:var(--ink)} .steps li.done::before{border-color:#1f9e57;background:#34d27f}
+@keyframes blink{50%{opacity:.3}}
+.tactions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* 총운 문서 — 화면은 세로 카드, 인쇄는 100×178mm 모바일 PDF */
+.doc{--theme:#1f2a44;--gold:#d8b25a;font-family:"Noto Sans KR",var(--f-body);font-size:15px;line-height:1.68;word-break:keep-all;display:grid;gap:18px;color:var(--ink)}
+.doc h2{margin:0 0 8px;font-family:var(--f-disp);font-weight:400;font-size:24px;color:var(--theme);display:flex;gap:10px;align-items:baseline}
+.doc h2 span{font-family:var(--f-pix);font-size:12px;color:var(--gold)}
+.doc h3{margin:12px 0 6px;font-size:16px;color:var(--theme)}
+.doc p{margin:0 0 8px}
+.doc section{background:#fff;border:3px solid var(--theme);border-radius:16px;padding:16px}
+.cover{background:var(--theme)!important;color:#fff;text-align:center;display:grid;gap:8px;padding:28px 16px!important;border-color:var(--gold)!important}
+.cover .cn{font-family:var(--f-disp);font-size:34px;color:var(--gold)}
+.cover .cl{font-family:var(--f-disp);font-size:20px;line-height:1.4}
+.cover dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:8px auto 0;text-align:left;font-size:13px;opacity:.9}
+.cover dt{color:var(--gold)} .cover dd{margin:0}
+.quote{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;margin:0 0 10px;padding:10px;border-radius:12px;background:var(--cream)}
+.quote img{width:54px;height:72px;image-rendering:pixelated}
+.quote p{margin:0;font-family:var(--f-disp);font-size:17px;line-height:1.45}
+.pillars{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}
+.pillar{border:2px solid var(--theme);border-radius:12px;padding:8px;text-align:center}
+.pillar .pos{font-size:12px;color:var(--ink-soft)}
+.pillar .gz{font-family:var(--f-disp);font-size:26px;line-height:1.2}
+.pillar small{display:block;font-size:12px;color:var(--ink-soft)}
+.bars{display:grid;gap:6px;margin:0 0 10px}
+.bar{display:grid;grid-template-columns:2.5em minmax(0,1fr) 1.5em;gap:8px;align-items:center;font-size:14px}
+.bar i{display:block;height:14px;border-radius:7px;background:var(--gold)}
+.bar.zero{color:var(--tomato-dk);font-weight:700}
+.rows{display:grid;gap:6px;margin:0 0 10px;padding:0;list-style:none}
+.rows li{border:1px solid rgba(43,33,64,.15);border-radius:10px;padding:8px 10px;font-size:14px}
+.rows li.now{border:2px solid var(--gold);background:#fffaf0}
+.rows b{color:var(--theme)}
+.cards{display:grid;gap:8px;margin:0 0 10px}
+.card2{border-left:5px solid var(--gold);background:#faf7f0;border-radius:0 12px 12px 0;padding:10px 12px}
+.card2 b{display:block;color:var(--theme);margin-bottom:2px}
+.cmp{border:2px solid var(--theme);border-radius:12px;overflow:hidden;margin:0 0 10px}
+.cmp h3{margin:0;padding:6px 10px;background:var(--theme);color:#fff;font-size:15px}
+.cmp p{margin:0;padding:6px 10px;border-top:1px solid rgba(43,33,64,.12);font-size:14px}
+.cmp p b{color:var(--theme)}
+.year{border:3px solid var(--theme);border-radius:16px;padding:14px;background:#fff;display:grid;gap:8px}
+.year h3{margin:0;font-family:var(--f-disp);font-weight:400;font-size:26px}
+.year .facts{font-size:13px;color:var(--ink-soft)}
+.stars{display:grid;gap:2px;font-size:14px}
+.stars span{color:var(--gold);letter-spacing:.1em}
+.year .todo{background:var(--theme);color:#fff;border-radius:10px;padding:8px 10px;margin:0}
+.notice{font-size:13px;color:var(--ink-soft)}
+.doc.pdf{width:318px;font-size:14.67px;gap:0}
+.doc.pdf section,.doc.pdf .year{border-radius:0;border-width:0;padding:6px 0}
+.doc.pdf .cover{min-height:560px;align-content:center;padding:24px 12px!important}
+@media print{
+  @page{size:100mm 178mm;margin:9mm 8mm 11mm 8mm}
+  body *{visibility:hidden}
+  #totalDoc,#totalDoc *{visibility:visible}
+  #totalBox{position:absolute;inset:0;overflow:visible;padding:0;background:#fff}
+  #totalDoc{position:absolute;left:0;top:0;width:100%;font-size:11pt;line-height:1.68;gap:0}
+  .doc section,.year{border-radius:0;border-width:0 0 1px;padding:4mm 0;break-inside:auto}
+  .cover{break-after:page;min-height:150mm;align-content:center}
+  .year{break-before:page;break-inside:avoid;border:0}
+  .card2,.pillar,.cmp,.rows li,.quote,.bar{break-inside:avoid}
+  .tactions{display:none!important}
+}
 .foot{font-size:13px;color:var(--ink-soft);text-align:center;margin:0}
 
 /* ---------- 막 ---------- */
@@ -333,9 +417,47 @@ textarea{resize:none;height:54px}
       <p class="paid-note" id="paidNote">심사를 받으면 상세 풀이를 열 수 있어요.</p>
     </section>
 
+    <section class="total-cta">
+      <div>
+        <b>3인 전체 총운</b>
+        <p>사주·자미두수·베딕 점성술로 본 나의 총운과 연애·직업, 그리고 앞으로 5년. 휴대폰 화면 크기의 PDF로 저장할 수 있어요.</p>
+      </div>
+      <button class="btn" id="totalOpen" type="button">3인 전체 총운 보기 <span class="beta">베타 무료</span></button>
+    </section>
+
     <p class="foot">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.</p>
   </div>
 </main>
+
+<!-- 3인 전체 총운 -->
+<div class="sheet total" id="totalBox" hidden role="dialog" aria-modal="true" aria-labelledby="totalTitle">
+  <div class="sheet-in">
+    <header class="sheet-head">
+      <button class="btn small ghost" id="totalClose" type="button">← 무대로</button>
+      <span class="sheet-brand" id="totalTitle">3인 전체 총운</span>
+    </header>
+    <form class="tform" id="totalForm" novalidate>
+      <p class="tlead">세 체계의 명식을 정확히 계산하려면 이름, 태어난 시각, 태어난 곳이 모두 필요해요. 태어난 곳은 경도로 시간을 보정하는 데 써요.</p>
+      <div class="person">
+        <label class="fl full"><span>이름</span><input type="text" id="tName" maxlength="10" placeholder="예: 민규" required></label>
+        <label class="fl"><span>생년월일 (양력)</span><input type="date" id="tBirth" min="1900-01-01" required></label>
+        <label class="fl"><span>태어난 시각</span><input type="time" id="tTime" required></label>
+        <div class="fl"><span class="legend" id="tgLbl">성별</span>
+          <div class="seg" role="radiogroup" aria-labelledby="tgLbl">
+            <label><input type="radio" name="tGender" value="여성" checked><span>여성</span></label>
+            <label><input type="radio" name="tGender" value="남성"><span>남성</span></label>
+          </div>
+        </div>
+        <label class="fl"><span>태어난 곳</span><select id="tPlace"></select></label>
+        <label class="fl tcoord" hidden><span>위도</span><input type="number" id="tLat" step="0.0001" min="-90" max="90" placeholder="37.5665"></label>
+        <label class="fl tcoord" hidden><span>경도</span><input type="number" id="tLon" step="0.0001" min="-180" max="180" placeholder="126.978"></label>
+      </div>
+      <p class="err" id="tErr" role="alert"></p>
+      <button class="btn go" id="tGo" type="submit">명식 계산하기</button>
+    </form>
+    <div id="totalBody"></div>
+  </div>
+</div>
 
 <!-- 상세 풀이 -->
 <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetQ">
@@ -1132,6 +1254,253 @@ async function makeCard(){
   x.fillText((LOVE?'우리도 궁합 보기':'나도 심사받기')+' → mingou0131.github.io/samin-samsaek',W/2,1292);
   x.fillStyle=C.soft; x.font='22px "Gowun Dodum"'; x.fillText('재미로 보는 운세입니다',W/2,1326);
   return c;
+}
+
+
+/* ================= 3인 전체 총운 =================
+   ① 입력 → ② 명식 계산(브라우저, chart.js) → ③ 시각 경계 검증(걸리면 후보 표로 묻기)
+   → ④ 서버가 세 체계 해석 + 종합 (진행 상황을 줄 단위로 받음) → ⑤ 화면에 문서로 표시 → PDF 저장 */
+let chartLib=null, tCands=null, tInput=null, tResult=null;
+const THEMES=['#1f2a44','#3a2350','#1f3d33','#4a1f2c','#243b4a'];
+const tBody=()=>$('#totalBody');
+
+$('#totalOpen').addEventListener('click',()=>{
+  track('total_open');
+  if(shown?.p){ const p=shown.p; $('#tBirth').value=p.birth||''; $('#tTime').value=p.time||'';
+    document.querySelectorAll('input[name=tGender]').forEach(r=>r.checked=r.value===p.gender);
+    if(p.name) $('#tName').value=p.name; }
+  $('#totalForm').hidden=false; tBody().replaceChildren();
+  openLayer($('#totalBox'),$('#totalClose'));
+  loadChartLib().catch(()=>{});
+});
+$('#totalClose').addEventListener('click',()=>closeLayer($('#totalBox')));
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#totalBox').hidden) closeLayer($('#totalBox')); });
+
+function loadChartLib(){ return chartLib ??= import('./chart.js?v=2').then(m=>{ fillPlaces(m.PLACES); return m; }); }
+function fillPlaces(list){
+  const sel=$('#tPlace'); if(sel.options.length) return;
+  list.forEach(([n,lat,lon])=>sel.append(new Option(n,JSON.stringify([n,lat,lon]))));
+  sel.append(new Option('그 밖의 지역 (위도·경도 직접 입력)','other'));
+  const guess=shown?.p?.place; const hit=[...sel.options].find(o=>guess&&o.text===guess); if(hit) sel.value=hit.value;
+  sel.addEventListener('change',()=>document.querySelectorAll('.tcoord').forEach(x=>x.hidden=sel.value!=='other'));
+}
+
+$('#totalForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const err=m=>{ $('#tErr').textContent=m; };
+  const name=$('#tName').value.trim(), birth=$('#tBirth').value, time=$('#tTime').value;
+  if(!name) return err('이름을 넣어 주세요.');
+  if(!birth||birth>todayISO()) return err('생년월일을 확인해 주세요.');
+  if(!time) return err('태어난 시각을 넣어 주세요. 총운은 시각이 있어야 계산할 수 있어요.');
+  let place, lat, lon; const sv=$('#tPlace').value;
+  if(sv==='other'){ lat=parseFloat($('#tLat').value); lon=parseFloat($('#tLon').value); place='직접 입력';
+    if(!(Math.abs(lat)<=90&&Math.abs(lon)<=180)) return err('위도와 경도를 숫자로 넣어 주세요.'); }
+  else if(sv){ [place,lat,lon]=JSON.parse(sv); }
+  else return err('태어난 곳을 골라 주세요.');
+  err('');
+  tInput={name,birth,time,gender:document.querySelector('input[name=tGender]:checked').value,place,lat,lon};
+  const go=$('#tGo'); go.disabled=true; dots(go,'명식 계산 중');
+  try{
+    const C=await loadChartLib();
+    tCands=C.candidates(tInput);
+    showBasis();
+  }catch(ex){ console.error(ex); err('계산 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.'); }
+  finally{ go.disabled=false; undots(go,'명식 계산하기'); }
+});
+
+// ③ 시각 경계 검증: 걸리면 후보를 표로 보여 주고 고르게 한다
+function showBasis(){
+  const c=tCands, box=el('div','tbox');
+  if(c.ask){
+    box.append(el('h3',null,'잠깐, 기준을 골라 주세요'),
+      el('p',null,'출생 시각이 경계에 걸려 있어 기준에 따라 여덟 글자가 달라질 수 있어요. 일간이 바뀌면 해석 전체가 달라지니 추측으로 진행하지 않을게요.'));
+    c.flags.forEach(f=>box.append(el('p','tflag',f.text)));
+    box.append(el('p',null,`출생 시각이 분 단위로 정확히 기록된 것이라면 보통 "진태양시" 기준을 권해요. (보정 ${c.offsetMin>0?'+':''}${c.offsetMin}분: 경도 보정 + 균시차 ${c.eotMin}분)`));
+    const list=el('div','tcand');
+    c.list.forEach((x,i)=>{ const l=el('label'), r=el('input'); r.type='radio'; r.name='tBasis'; r.value=i; r.checked=i===0;
+      const t=el('div'); t.append(el('div','gz',x.hangul),el('small',null,`${x.label} · 일간 ${x.dayMasterKo}`)); l.append(r,t); list.append(l); });
+    box.append(list);
+  } else {
+    const x=c.list[0];
+    box.append(el('h3',null,'명식을 계산했어요'),el('div','tcand gz',x.hangul),
+      el('p',null,`시간 보정에 흔들리지 않는 명식이에요. 진태양시 ${c.tst.slice(11)} (보정 ${c.offsetMin>0?'+':''}${c.offsetMin}분) 기준.`));
+  }
+  const btn=el('button','btn go','세 심사위원에게 풀이 받기'); btn.type='button';
+  btn.onclick=()=>{ const i=c.ask?+document.querySelector('input[name=tBasis]:checked').value:0; requestTotal(c.list[i]); };
+  box.append(btn, el('p','notice','풀이는 1분쯤 걸려요. 창을 닫지 말고 기다려 주세요.'));
+  $('#totalForm').hidden=true; tBody().replaceChildren(box);
+  const back=el('button','btn small ghost','입력 다시 하기'); back.type='button'; back.onclick=()=>{ $('#totalForm').hidden=false; tBody().replaceChildren(); };
+  tBody().append(back);
+}
+
+// ④ 서버에 풀이 요청 — 진행 상황을 줄 단위(NDJSON)로 받는다
+async function requestTotal(cand){
+  const C=await loadChartLib();
+  const chart=C.buildChart(tInput,cand,tCands);
+  const steps=[['saju','사주 할머니가 여덟 글자를 읽는 중'],['jami','자미두수 도사가 명반을 펼치는 중'],['vedic','베딕 구루가 행성 차트를 보는 중'],['synth','세 해석을 한 권으로 엮는 중']];
+  const box=el('div','tbox'), ul=el('ul','steps'), li={};
+  steps.forEach(([k,t])=>{ li[k]=el('li','doing',t); ul.append(li[k]); }); li.synth.className='';
+  box.append(waitBox(JUDGES,'세 심사위원이 총운을 쓰는 중','1분쯤 걸려요.'),ul);
+  tBody().replaceChildren(box);
+  const got={};
+  try{
+    const r=await fetch(API_URL+'/total',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({chart,vid:VID}),signal:AbortSignal.timeout(240000)});
+    if(r.status===429) throw new Error('요청이 너무 잦아요. 1분 뒤에 다시 받아 주세요.');
+    if(!r.ok) throw new Error('심사위원 연결이 잠시 끊겼어요. 잠시 뒤 다시 받아 주세요.');
+    const reader=r.body.getReader(), dec=new TextDecoder(); let buf='';
+    for(;;){ const {value,done}=await reader.read(); if(done) break; buf+=dec.decode(value,{stream:true});
+      let i; while((i=buf.indexOf('\n'))>=0){ const line=buf.slice(0,i); buf=buf.slice(i+1); if(!line) continue;
+        const m=JSON.parse(line);
+        if(m.type==='section'){ got[m.id]=m.data; li[m.id].className='done'; }
+        if(m.type==='stage'&&m.stage==='synth') li.synth.className='doing';
+        if(m.type==='synth'){ got.synth=m.data; li.synth.className='done'; }
+        if(m.type==='error') throw new Error('풀이를 끝내지 못했어요. 다시 받아 주세요.');
+      } }
+    if(!got.synth||!got.saju||!got.jami||!got.vedic) throw new Error('풀이가 중간에 끊겼어요. 다시 받아 주세요.');
+    tResult={chart,reading:got};
+    renderDoc(chart,got);
+  }catch(ex){
+    const b=el('div','tbox'); b.append(el('h3',null,'풀이를 받지 못했어요'),el('p',null,ex.name==='TimeoutError'?'시간이 너무 오래 걸렸어요. 다시 받아 주세요.':ex.message));
+    const again=el('button','btn','다시 받기'); again.type='button'; again.onclick=()=>requestTotal(cand); b.append(again);
+    tBody().replaceChildren(b);
+  }
+}
+
+// ⑤ 문서
+function renderDoc(chart,R){
+  const P=chart.person, S=chart.saju, J=chart.jami, V=chart.vedic, Y=R.synth;
+  const doc=el('article','doc'); doc.id='totalDoc';
+  doc.style.setProperty('--theme',THEMES[hash(P.name+P.birth)%THEMES.length]);
+  const sec=(num,title)=>{ const s=el('section'), h=el('h2'); h.append(el('span',null,num),document.createTextNode(title)); s.append(h); doc.append(s); return s; };
+  const para=(s,t)=>s.append(el('p',null,t));
+  const h3=(s,t)=>s.append(el('h3',null,t));
+  const quote=(s,id,t)=>{ const q=el('div','quote'); q.append(portrait(JUDGES.find(j=>j.id===id)),el('p',null,t)); s.append(q); };
+  const list=(s,items,fn)=>{ const u=el('ul','rows'); items.forEach(x=>{ const l=el('li'); fn(l,x); u.append(l); }); s.append(u); };
+  const cards=(s,items)=>{ const c=el('div','cards'); items.forEach(([b,t])=>{ const d=el('div','card2'); if(b) d.append(el('b',null,b)); d.append(el('span',null,t)); c.append(d); }); s.append(c); };
+
+  // 표지
+  const cv=el('section','cover');
+  const dl=el('dl'); [['생년월일',`${P.birth} ${P.time} (${P.gender})`],['음력',S.lunar],['출생지',`${P.place} (${P.lat.toFixed(2)}, ${P.lon.toFixed(2)})`],['기준',chart.basis.label]].forEach(([a,b])=>dl.append(el('dt',null,a),el('dd',null,b)));
+  cv.append(el('div','cn',P.name),el('div',null,'사주 · 자미두수 · 베딕 3체계 종합 리딩'),el('div','cl',Y.core_line),dl);
+  doc.append(cv);
+
+  // 00
+  const s0=sec('00','들어가며');
+  para(s0,'사주는 태어난 순간의 기운(여덟 글자), 자미두수는 별이 놓인 열두 개의 방(명반), 베딕 점성술은 인도식 행성 시간표(다샤)로 한 사람을 봅니다. 세 체계를 먼저 따로 읽고, 마지막에 겹치는 곳과 부딪히는 곳을 정리했습니다.');
+  h3(s0,'시각 보정 결과');
+  para(s0,`시계 시각 ${chart.basis.kst.slice(11)} → 진태양시 ${chart.basis.tst.slice(11)} (경도 보정과 균시차로 ${chart.basis.offsetMin>0?'+':''}${chart.basis.offsetMin}분).`);
+  if(chart.basis.stable) para(s0,'시간 보정에 흔들리지 않는 명식입니다. 시진·자시·절기 경계에 걸리지 않았습니다.');
+  else { chart.basis.flags.forEach(f=>para(s0,'· '+f)); para(s0,`선택한 기준: ${chart.basis.label}`); }
+  const v=J.verify; para(s0,`자미두수 간지 대조: 연 ${v.year?'일치':'불일치'} · 일 ${v.day?'일치':'불일치'} · 시 ${v.hour?'일치':'불일치'} (${v.monthNote})`);
+  h3(s0,'읽는 순서'); para(s0,Y.intro);
+  h3(s0,'핵심 한 줄'); cards(s0,[[Y.metaphor,Y.core_line]]);
+
+  // 01 사주
+  const s1=sec('01','사주 — 사주 할머니');
+  quote(s1,'saju',R.saju.quote);
+  const pg=el('div','pillars');
+  S.pillars.forEach(p=>{ const d=el('div','pillar'); d.append(el('div','pos',p.pos),el('div','gz',p.ko),el('small',null,`${p.gz} · ${p.ganWx}/${p.zhiWx}`),el('small',null,`${p.ganShishen} · ${p.zhiShishen}`)); pg.append(d); });
+  s1.append(pg);
+  h3(s1,`일간 ${S.dayMaster} · 오행 개수`);
+  const bars=el('div','bars'), mx=Math.max(...Object.values(S.wuxing),1);
+  Object.entries(S.wuxing).forEach(([k,n])=>{ const b=el('div','bar'+(n===0?' zero':'')), i=el('i'); i.style.width=(n/mx*100)+'%'; const t=el('div'); t.append(i); b.append(el('span',null,k),t,el('span',null,String(n))); bars.append(b); });
+  s1.append(bars);
+  if(S.shishenZero.length) para(s1,`비어 있는 십신: ${S.shishenZero.join(', ')}`);
+  if(S.relations.length) para(s1,`합·충·형: ${S.relations.join(' / ')}`);
+  para(s1,R.saju.overview); h3(s1,'구조'); para(s1,R.saju.structure);
+  h3(s1,'강점'); cards(s1,R.saju.strengths.map(t=>['',t]));
+  h3(s1,'과제'); cards(s1,R.saju.tasks.map(t=>['',t]));
+  h3(s1,'용신'); para(s1,R.saju.yongsin);
+  h3(s1,`대운표 (${S.daeunDirection})`);
+  const thisYear=new Date().getFullYear();
+  list(s1,S.daeun,(l,d)=>{ if(d.year<=thisYear&&thisYear<d.year+10) l.className='now'; l.append(el('b',null,`${d.age}세 (${d.year}~) ${d.ko}`)); });
+  cards(s1,R.saju.daeun.map(d=>[d.range,d.reading]));
+
+  // 02 자미두수
+  const s2=sec('02','자미두수 — 자미두수 도사');
+  quote(s2,'jami',R.jami.quote);
+  para(s2,`명주 ${J.soulStar} · 신주 ${J.bodyStar} · ${J.fiveElements} · 현재 대한 ${J.currentDecadal.palace}궁`);
+  para(s2,R.jami.overview);
+  h3(s2,'열두 궁');
+  list(s2,J.palaces,(l,p)=>{ if(p.soul||p.body) l.className='now';
+    l.append(el('b',null,`${p.name}${p.soul?' (명궁)':''}${p.body?' (신궁)':''} · ${p.gz}`));
+    const stars=p.major.map(s=>`${s.name}${s.bright?'('+s.bright+')':''}${s.mutagen?' 화'+s.mutagen:''}`).join(', ')||'주성 없음';
+    l.append(el('div',null,`${stars} · 대한 ${p.decadal.join('~')}세`)); });
+  h3(s2,'핵심 네 개의 방'); cards(s2,R.jami.key_palaces.map(k=>[k.palace,k.reading]));
+  h3(s2,'대한'); cards(s2,R.jami.daehan.map(d=>[d.range,d.reading]));
+
+  // 03 베딕
+  const s3=sec('03','베딕 점성술 — 베딕 구루');
+  quote(s3,'vedic',R.vedic.quote);
+  para(s3,`라그나 ${V.lagna.signName} ${V.lagna.deg}° · 달 ${V.moonSign} (${V.moonNak}) · 아야남샤 ${V.ayanamsa}° (Lahiri)`);
+  para(s3,R.vedic.overview);
+  h3(s3,'행성 배치');
+  list(s3,V.planets,(l,p)=>{ l.append(el('b',null,`${p.name} · ${p.house}하우스`),el('div',null,`${p.signName} ${p.deg}° · ${p.nak} ${p.pada}파다${p.retro&&!['라후','케투'].includes(p.name)?' · 역행':''}${p.dignity?' · '+p.dignity:''}`)); });
+  h3(s3,'핵심 다섯 가지'); cards(s3,R.vedic.key_points.map(k=>[k.title,k.reading]));
+  h3(s3,'다샤 시간표');
+  list(s3,V.mahadasha,(l,d)=>{ if(d.now) l.className='now'; l.append(el('b',null,`${d.lord} 다샤`),el('span',null,` ${d.from} ~ ${d.to}`)); });
+  const an=V.antardasha.find(a=>a.now); if(an) para(s3,`지금은 ${V.mahadasha.find(d=>d.now)?.lord} 다샤 안의 ${an.lord} 안타르다샤 (${an.from} ~ ${an.to})입니다.`);
+  cards(s3,R.vedic.dasha.map(d=>[d.period,d.reading]));
+
+  // 04 비교
+  const s4=sec('04','세 체계 비교');
+  Y.compare.forEach(c=>{ const b=el('div','cmp'); b.append(el('h3',null,c.topic));
+    [['사주',c.saju],['자미두수',c.jami],['베딕',c.vedic]].forEach(([k,t])=>{ const p=el('p'); p.append(el('b',null,k+' '),document.createTextNode(t)); b.append(p); }); s4.append(b); });
+  h3(s4,'공통점'); cards(s4,Y.commons.map(t=>['',t]));
+  h3(s4,'부딪히는 곳'); cards(s4,Y.conflicts.map(c=>[c.issue,c.integration]));
+
+  // 05 결론
+  const s5=sec('05','결론');
+  h3(s5,'총운'); para(s5,Y.conclusion.overall);
+  h3(s5,'연애'); para(s5,Y.conclusion.love);
+  h3(s5,'직업'); para(s5,Y.conclusion.career);
+
+  // 06 5년
+  const s6=sec('06','앞으로 5년');
+  const star=n=>{ n=Math.max(1,Math.min(5,Math.round(n)||1)); return '★'.repeat(n)+'☆'.repeat(5-n); };
+  Y.years.forEach(y=>{
+    const c=el('div','year'), su=S.seun.find(x=>x.year===y.year), yu=J.yearly.find(x=>x.year===y.year), tr=V.transits.find(x=>x.year===y.year);
+    c.append(el('h3',null,String(y.year)));
+    c.append(el('div','facts',[su&&`세운 ${su.ko}`,yu&&`유년 ${yu.palace}궁`,tr&&`토성 ${tr.saturn.split('(')[0]}${tr.sadeSati?' (사데 사티 '+tr.sadeSati+')':''} · 목성 ${tr.jupiter.split('(')[0]}`].filter(Boolean).join(' · ')));
+    const st=el('div','stars'); [['사주',y.stars.saju],['자미두수',y.stars.jami],['베딕',y.stars.vedic]].forEach(([k,n])=>{ const d=el('div'); d.append(document.createTextNode(k+' '),el('span',null,star(n))); st.append(d); });
+    c.append(st);
+    [['사주',y.saju],['자미두수',y.jami],['베딕',y.vedic]].forEach(([k,t])=>{ const p=el('p'); p.append(el('b',null,k+' '),document.createTextNode(t)); c.append(p); });
+    c.append(el('p','todo','할 일 · '+y.todo));
+    s6.append(c);
+  });
+
+  // 고지
+  const sn=sec('','고지');
+  para(sn,Y.notice);
+  para(sn,'계산 근거: 사주는 진태양시와 절기 실시각(lunar-javascript), 자미두수는 iztro, 베딕은 Lahiri 아야남샤·홀사인 하우스·빔쇼타리 다샤(astronomy-engine)로 계산했습니다. 해석은 이 계산값을 근거로 AI 심사위원이 작성했습니다.');
+  sn.classList.add('notice');
+
+  const actions=()=>{ const a=el('div','tactions');
+    const pdf=el('button','btn go','PDF 저장'); pdf.type='button'; pdf.onclick=()=>savePdf(pdf);
+    const redo=el('button','btn ghost','다른 사람 보기'); redo.type='button'; redo.onclick=()=>{ $('#totalForm').hidden=false; tBody().replaceChildren(); $('#totalBox').scrollTop=0; };
+    a.append(pdf,redo); return a; };
+  tBody().replaceChildren(actions(),doc,actions());
+  $('#totalBox').scrollTop=0;
+}
+
+// PDF: 화면에 띄운 문서를 100×178mm 휴대폰 비율 PDF로 바로 내려받는다
+async function savePdf(btn){
+  track('total_print');
+  const label=btn.textContent; btn.disabled=true; dots(btn,'PDF 만드는 중');
+  try{
+    if(!window.html2pdf) await new Promise((ok,no)=>{ const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'; s.onload=ok; s.onerror=no; document.head.append(s); });
+    await document.fonts.ready;
+    const doc=$('#totalDoc');
+    doc.classList.add('pdf');
+    await html2pdf().set({
+      margin:[9,8,11,8], filename:`${tResult.chart.person.name}_종합리딩_모바일.pdf`,
+      image:{type:'jpeg',quality:0.92}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},
+      jsPDF:{unit:'mm',format:[100,178],orientation:'portrait'},
+      pagebreak:{mode:['css'],avoid:['.card2','.pillar','.cmp','.rows li','.quote','.bar','.year'],before:['.year','.doc > section:not(.cover)']},
+    }).from(doc).save();
+    doc.classList.remove('pdf');
+    btn.disabled=false; undots(btn,label);
+  }catch(ex){ console.error(ex); $('#totalDoc')?.classList.remove('pdf'); btn.disabled=false; undots(btn,'PDF를 만들지 못했어요. 다시 누르기'); }
 }
 
 })();
