@@ -319,9 +319,8 @@ textarea{resize:none;height:54px}
   <div class="share-in">
     <img id="shareImg" alt="판정 결과 이미지">
     <div class="share-btns">
-      <button class="btn" id="shareNative" type="button" hidden>공유하기</button>
-      <button class="btn" id="shareSave" type="button">이미지 저장</button>
-      <button class="btn ghost" id="shareLink" type="button">링크 복사</button>
+      <button class="btn" id="shareGo" type="button" disabled>결과 링크 만드는 중…</button>
+      <button class="btn ghost" id="shareSave" type="button">이미지 저장</button>
       <button class="btn ghost" id="shareClose" type="button">닫기</button>
     </div>
     <p class="share-msg" id="shareMsg" role="status"></p>
@@ -856,8 +855,11 @@ function renderDetail(who,d){
   body.replaceChildren(...out);
 }
 
-/* ================= 결과 공유 이미지 ================= */
+/* ================= 결과 공유 =================
+   결과마다 고유 링크를 만든다. 링크를 메신저·SNS에 붙이면 결과 이미지가 미리보기로 함께 뜨고,
+   링크를 누른 친구는 결과 카드와 "나도 심사받기" 버튼을 본다. */
 const SITE='https://mingou0131.github.io/samin-samsaek/';
+const CAN_SHARE=!!navigator.share;
 let shareFile=null;
 $('#share').addEventListener('click',openShare);
 $('#shareClose').addEventListener('click',()=>closeLayer($('#shareBox')));
@@ -866,29 +868,80 @@ $('#shareSave').addEventListener('click',()=>{
   const a=el('a'); a.href=URL.createObjectURL(shareFile); a.download=shareFile.name; a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),4000); track('share_save'); $('#shareMsg').textContent='이미지를 저장했어요.';
 });
-$('#shareNative').addEventListener('click',async()=>{
-  try{ await navigator.share({files:[shareFile],title:'삼인삼색 운세 오디션',text:shareText(),url:SITE}); track('share_native'); }
-  catch(e){ if(e.name!=='AbortError') $('#shareMsg').textContent='공유하지 못했어요. 이미지 저장을 이용해 주세요.'; }
+$('#shareGo').addEventListener('click',async()=>{
+  const url=shown.shareUrl||SITE, text=shareText();
+  if(CAN_SHARE){
+    try{ await navigator.share({title:'삼인삼색 운세 오디션',text,url}); track('share_native'); }
+    catch(e){ if(e.name!=='AbortError') copyLink(text,url); }
+  } else copyLink(text,url);
 });
-$('#shareLink').addEventListener('click',async()=>{
+async function copyLink(text,url){
   track('share_link');
-  try{ await navigator.clipboard.writeText(SITE); $('#shareMsg').textContent='사이트 링크를 복사했어요.'; }
-  catch{ $('#shareMsg').textContent=SITE; }
-});
-const shareText=()=>`"${shown.p.q}" 심사 결과 ${shown.o} : ${shown.x} ${shown.grade}!`;
+  try{ await navigator.clipboard.writeText(text+' '+url); $('#shareMsg').textContent='결과 링크를 복사했어요. 붙여 넣으면 결과 이미지가 함께 보여요.'; }
+  catch{ $('#shareMsg').textContent=url; }
+}
+const shareText=()=>`"${shown.p.q}" 삼인삼색 심사 결과 ${shown.o} : ${shown.x} ${shown.grade}! 나도 심사받기`;
 
 async function openShare(){
   if(!shown) return;
   track('share_open');
+  const go=$('#shareGo');
   $('#shareMsg').textContent='이미지를 만드는 중이에요…';
   $('#shareImg').removeAttribute('src');
+  go.disabled=true; go.textContent='결과 링크 만드는 중…';
   openLayer($('#shareBox'),$('#shareClose'));
-  const card=await makeCard();
-  const blob=await new Promise(r=>card.toBlob(r,'image/png'));
-  shareFile=new File([blob],`samin-samsaek-${new Date().toISOString().slice(0,10)}.png`,{type:'image/png'});
-  $('#shareImg').src=URL.createObjectURL(blob);
-  $('#shareNative').hidden=!(navigator.canShare&&navigator.canShare({files:[shareFile]}));
+  const toBlob=c=>new Promise(r=>c.toBlob(r,'image/png'));
+  const card=await toBlob(await makeCard());
+  shareFile=new File([card],`samin-samsaek-${new Date().toISOString().slice(0,10)}.png`,{type:'image/png'});
+  $('#shareImg').src=URL.createObjectURL(card);
   $('#shareMsg').textContent='';
+  if(shown.real&&shown.jid&&!shown.shareUrl){
+    try{
+      const f=new FormData();
+      f.append('jid',shown.jid); f.append('vid',VID); f.append('q',shown.p.q);
+      f.append('card',shareFile); f.append('og',new File([await toBlob(await makeOg())],'og.png',{type:'image/png'}));
+      const r=await fetch(API_URL+'/share',{method:'POST',body:f,signal:AbortSignal.timeout(30000)});
+      if(r.ok) shown.shareUrl=(await r.json()).url;
+    }catch{}
+  }
+  go.disabled=false;
+  go.textContent=CAN_SHARE?'결과 링크 공유하기':'결과 링크 복사';
+  if(!shown.shareUrl) $('#shareMsg').textContent='결과 링크를 만들지 못해 사이트 링크로 공유해요. 이미지는 저장해서 함께 올려 주세요.';
+}
+
+// 링크 미리보기용 1200×630 가로 이미지
+async function makeOg(){
+  const W=1200,H=630,c=el('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
+  const C={cream:'#fff0cc',ray:'#ffe1a1',ink:'#2b2140',amber:'#ffb53d',o:'#34d27f',xx:'#ff5a52',teal:'#1f6f78',tomato:'#e0483e',bulb:'#ffd966',paper:'#fffaf0',lav:'#cdbfe6'};
+  x.fillStyle=C.cream; x.fillRect(0,0,W,H);
+  x.save(); x.translate(W/2,430); x.fillStyle=C.ray;
+  for(let i=0;i<20;i++){ x.beginPath(); x.moveTo(0,0); x.arc(0,0,1500,i*Math.PI/10,i*Math.PI/10+Math.PI/20); x.fill(); }
+  x.restore();
+  rrect(x,30,26,1140,236,34); x.fillStyle=C.tomato; x.fill(); x.lineWidth=6; x.strokeStyle=C.ink; x.stroke();
+  rrect(x,46,42,1108,204,24); x.fillStyle=C.ink; x.fill();
+  x.fillStyle=C.bulb;
+  for(let X=60;X<=1140;X+=30){ x.beginPath(); x.arc(X,34,5,0,7); x.arc(X,254,5,0,7); x.fill(); }
+  x.fillStyle=C.lav; x.font='26px "Do Hyeon"'; x.fillText('삼인삼색 운세 오디션',80,92);
+  x.fillStyle=C.amber; x.font='50px "Do Hyeon"'; x.shadowColor='rgba(255,160,40,.6)'; x.shadowBlur=12;
+  wrapText(x,shown.p.q,560,2).forEach((l,i)=>x.fillText(l,80,160+i*58));
+  x.font='48px "Press Start 2P"'; x.textAlign='right';
+  const so=String(shown.o), sx=String(shown.x), sep=' : ';
+  let R=900; x.fillStyle=C.xx; x.shadowColor=C.xx; x.fillText(sx,R,188); R-=x.measureText(sx).width;
+  x.fillStyle=C.amber; x.shadowColor=C.amber; x.fillText(sep,R,188); R-=x.measureText(sep).width;
+  x.fillStyle=C.o; x.shadowColor=C.o; x.fillText(so,R,188);
+  const gcol=shown.o>=2?C.o:C.xx;
+  x.shadowColor=gcol; x.shadowBlur=20; x.lineWidth=8; x.strokeStyle=gcol;
+  x.beginPath(); x.arc(1045,144,86,0,7); x.stroke();
+  x.fillStyle=C.paper; x.font='19px "Press Start 2P"'; x.textAlign='center';
+  const gl=shown.grade.split(' '); gl.forEach((l,i)=>x.fillText(l,1045,152+(i-(gl.length-1)/2)*32));
+  x.shadowBlur=0;
+  x.imageSmoothingEnabled=false;
+  JUDGES.forEach((j,i)=>x.drawImage(j.ctx.canvas,300+i*300-96,272,192,256));
+  rrect(x,30,508,1140,64,16); x.fillStyle=C.teal; x.fill(); x.lineWidth=6; x.strokeStyle=C.ink; x.stroke();
+  x.font='28px "Do Hyeon"';
+  JUDGES.forEach((j,i)=>{ const cx=300+i*300; rrect(x,cx-120,519,240,42,10); x.fillStyle=C.paper; x.fill(); x.lineWidth=3; x.stroke(); x.fillStyle=C.ink; x.fillText(j.name,cx,550); });
+  x.fillStyle=C.ink; x.font='28px "Do Hyeon"'; x.fillText('나도 심사받기 → mingou0131.github.io/samin-samsaek',W/2,610);
+  return c;
 }
 
 function wrapText(x,text,maxW,maxLines){
