@@ -359,6 +359,26 @@ textarea{resize:none;height:54px}
 .err{color:#c0183a;font-size:13px;min-height:1.2em;margin:6px 0 0;text-align:center}
 .card .go{width:100%;margin-top:6px;font-size:21px;padding:10px}
 .card .fine{font-size:11px;color:var(--ink-soft);text-align:center;margin:8px 0 0}
+/* 오늘의 심사 · 지난 질문 · 시즌 질문 */
+.daily{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;margin:0 0 10px;padding:10px 12px;border:3px solid var(--ink);border-radius:14px;background:var(--plum);color:var(--paper)}
+.daily b{font-family:var(--f-disp);font-weight:400;font-size:19px;color:var(--amber)}
+.daily small{display:block;font-size:12px;color:#cdbfe6}
+.daily .btn{font-size:16px;padding:6px 12px}
+.hist{margin:0 0 10px;border:2px solid var(--ink);border-radius:14px;background:#fff}
+.hist summary{cursor:pointer;padding:7px 12px;font-family:var(--f-disp);font-size:16px}
+.hist ul{list-style:none;margin:0;padding:0 8px 8px;display:grid;gap:6px}
+.hist li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13px;border-top:1px dashed rgba(43,33,64,.2);padding-top:6px}
+.hist li small{color:var(--ink-soft)}
+.hist li .due{color:var(--tomato-dk)}
+.hist button{border:2px solid var(--ink);border-radius:999px;background:var(--bulb);padding:3px 10px;font-size:12px;cursor:pointer;color:var(--ink);white-space:nowrap}
+.chip.season{border-color:var(--tomato);color:var(--tomato-dk)}
+.chip.season[aria-pressed=true]{background:var(--tomato);color:var(--paper)}
+.retain{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 14px;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(255,250,240,.85);border:3px solid var(--ink)}
+.retain p{margin:0;font-size:14px;color:var(--ink-soft)}
+.retain b{display:block;font-family:var(--f-disp);font-weight:400;font-size:19px;color:var(--ink)}
+.retain .btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.retain .btn{font-size:15px;padding:5px 12px;text-decoration:none}
+@media (max-width:560px){ .retain{grid-template-columns:minmax(0,1fr)} .retain .btns{justify-content:stretch} .retain .btn{flex:1} }
 
 #fx{position:fixed;inset:0;width:100%;height:100%;z-index:40;pointer-events:none;image-rendering:pixelated}
 
@@ -402,6 +422,7 @@ textarea{resize:none;height:54px}
     <!-- 한 줄 평을 읽고 내려온 시선이 바로 닿는 자리 -->
     <button class="btn share-cta" id="share2" type="button" hidden>결과 공유하기 <small>친구에게 결과 링크 보내기</small></button>
 
+
     <section class="paid">
       <p><span id="paidLead">왜 O를 들었는지, 왜 X를 들었는지 궁금하다면 심사위원의 상세 풀이를 열어보세요.</span> <span class="beta">베타 기간 무료</span></p>
       <div class="btns">
@@ -415,6 +436,16 @@ textarea{resize:none;height:54px}
         <button type="button" data-who="vedic">베딕 구루</button>
       </div>
       <p class="paid-note" id="paidNote">심사를 받으면 상세 풀이를 열 수 있어요.</p>
+    </section>
+
+    <!-- 다시 오게 만드는 자리: 오늘의 심사 + 매일 알림 -->
+    <section class="retain" id="retain" hidden>
+      <p><b id="retainTitle">오늘의 심사는 매일 자정에 바뀌어요</b><span id="retainSub">세 심사위원이 매일 오늘 하루를 심사해요. 잊지 않게 알려 드릴게요.</span></p>
+      <div class="btns">
+        <button class="btn" id="dailyGo2" type="button">오늘의 심사 보기</button>
+        <button class="btn ghost" id="remind" type="button">매일 아침 알림 받기</button>
+        <a class="btn ghost" id="kakao" target="_blank" rel="noopener" hidden>카카오톡 채널 추가</a>
+      </div>
     </section>
 
     <section class="total-cta">
@@ -491,6 +522,11 @@ textarea{resize:none;height:54px}
 
 <div class="entry" id="entryWrap">
   <form class="card" id="entry" novalidate>
+    <div class="daily" id="daily" hidden>
+      <div><b id="dailyTitle">오늘의 심사</b><small id="dailySub"></small></div>
+      <button class="btn" id="dailyGo" type="button">오늘 하루 심사받기</button>
+    </div>
+    <details class="hist" id="hist" hidden><summary>지난 질문 <span id="histN"></span></summary><ul id="histList"></ul></details>
     <div class="modes" role="radiogroup" aria-label="심사 방식">
       <button type="button" class="mode-btn" data-mode="solo" aria-checked="true" role="radio">운세 오디션</button>
       <button type="button" class="mode-btn love-btn" data-mode="love" aria-checked="false" role="radio">그린라이트 모드 <small>궁합</small></button>
@@ -511,6 +547,7 @@ textarea{resize:none;height:54px}
           </div>
         </div>
         <label class="fl"><span>태어난 곳</span><input type="text" id="place" maxlength="30" placeholder="예: 부산"></label>
+        <label class="chk full"><input type="checkbox" id="remember" checked> 이 기기에 내 출생 정보 기억하기 (오늘의 심사용)</label>
       </fieldset>
       <fieldset class="person full love-only">
         <legend>상대</legend>
@@ -536,7 +573,7 @@ textarea{resize:none;height:54px}
     </div>
     <p class="err" id="err" role="alert"></p>
     <button class="btn go" id="go" type="submit">질문 전달하기</button>
-    <p class="fine">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.<br>서비스 개선을 위해 질문과 이용 기록을 저장해요. 생년월일은 태어난 해만 저장해요.</p>
+    <p class="fine">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.<br>서비스 개선을 위해 질문과 이용 기록을 저장해요. 생년월일은 태어난 해만 저장해요. 기억하기를 켜면 출생 정보와 지난 질문은 이 기기에만 남아요.</p>
   </form>
 </div>
 
@@ -839,7 +876,7 @@ const chipsEl=$('#chips'); let chosen;
 function renderChips(list){
   chosen=list[0]; chipsEl.replaceChildren(); $('#customWrap').hidden=true;
   list.forEach(q=>{
-    const b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=q;
+    const b=document.createElement('button'); b.type='button'; b.className=SEASON_QS.has(q)?'chip season':'chip'; b.textContent=q;
     b.setAttribute('aria-pressed',q===chosen); b.onclick=()=>{ chosen=q;
       chipsEl.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c===b));
       $('#customWrap').hidden=q!=='직접 쓰기'; if(q==='직접 쓰기') $('#custom').focus(); };
@@ -855,14 +892,14 @@ function setFormMode(m){
   $('#formSub').textContent=love?'두 사람의 궁합에 세 심사위원이 초록불·빨간불을 켭니다':'한국의 사주, 중국의 자미두수, 인도의 베딕 점성술 — 세 명이 한 번에 심사';
   $('#go').textContent=love?'두 사람 심사받기':'질문 전달하기';
   $('#custom').placeholder=love?'예: 올해 안에 고백해도 될까?':'예: 이번 여름에 가게를 열어도 될까?';
-  renderChips(love?LOVE_QUESTIONS:QUESTIONS); $('#err').textContent='';
+  renderChips(withSeason(love?LOVE_QUESTIONS:QUESTIONS,love)); $('#err').textContent='';
 }
 document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=>setFormMode(b.dataset.mode)));
-renderChips(QUESTIONS);
 $('#custom').addEventListener('input',e=>$('#cnt').textContent=e.target.value.length);
 $('#noTime').addEventListener('change',e=>{ $('#btime').disabled=e.target.checked; });
 $('#noTime2').addEventListener('change',e=>{ $('#btime2').disabled=e.target.checked; });
-const todayISO=()=>{ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+const isoOf=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const todayISO=()=>isoOf(new Date());
 $('#birth').max=todayISO(); $('#birth2').max=todayISO();
 
 $('#entry').addEventListener('submit',e=>{
@@ -881,14 +918,16 @@ $('#entry').addEventListener('submit',e=>{
     ['birth'+sfx]:$('#birth'+sfx).value, ['time'+sfx]:$('#noTime'+sfx).checked?'':$('#btime'+sfx).value,
     ['gender'+sfx]:document.querySelector('input[name=gender'+sfx+']:checked').value, ['place'+sfx]:$('#place'+sfx).value.trim(),
   });
-  const p={mode:love?'love':'solo', ...pick(''), q, preset:chosen!=='직접 쓰기', today:todayISO()};
+  const p={mode:love?'love':'solo', ...pick(''), q, preset:chosen!=='직접 쓰기', today:todayISO(), src:SEASON_QS.has(q)?'season':'form'};
   if(love){ Object.assign(p,pick('2'),{name:$('#name').value.trim(), name2:$('#name2').value.trim()});
     p.title=(p.name||'나')+' ♥ '+(p.name2||'상대')+' · '+q; }
+  remember(pick(''),$('#name').value.trim());
   run(p);
 });
 
 $('#again').addEventListener('click',()=>{
   track('again');
+  renderHome();
   document.body.classList.remove('open');
   JUDGES.forEach(j=>setState(j,'idle')); redraw();
   setResult(null);
@@ -972,7 +1011,7 @@ async function run(p){
   const G2=(LOVE?{3:['ALL<br>GREEN','good'],2:['GREEN','good'],1:['RED','bad'],0:['ALL<br>RED','bad']}
                 :{3:['EXCELLENT','good'],2:['GOOD','good'],1:['NOT<br>GOOD','bad'],0:['BAD','bad']})[o];
   grade.className='grade '+G2[1]; delete $('#gradeTxt').dataset.dots; $('#gradeTxt').innerHTML=G2[0];
-  undots($('#status'),note);
+  undots($('#status'),note||(jid?afterJudge(p,o,x):''));
   if(o===3) fireworks();
   if(o===0){ JUDGES.forEach(j=>setState(j,'panic')); redraw();
     const b=$('#board'); b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
@@ -1000,7 +1039,8 @@ let shown=null;               // {p,res,real,o,x,grade}
 let details={};              // 이번 판정의 상세 풀이 (who → 결과)
 function setResult(r){
   shown=r; details={};
-  $('#share').hidden=!r; $('#share2').hidden=!r;
+  $('#share').hidden=!r; $('#share2').hidden=!r; $('#retain').hidden=!r;
+  if(r) renderRetain();
   const ok=!!(r&&r.real);
   $('#buyOne').disabled=!ok; $('#buyAll').disabled=!ok;
   $('#pick').hidden=true; $('#buyOne').setAttribute('aria-expanded','false');
@@ -1008,12 +1048,20 @@ function setResult(r){
     : ok ? '' : '연습 판정에는 상세 풀이가 없어요. 잠시 뒤 다시 심사받아 주세요.';
 }
 const portrait=j=>{ const i=new Image(); i.src=j.ctx.canvas.toDataURL(); i.alt=''; return i; };
-// 화면 이벤트 기록 (실패해도 화면에는 영향 없음)
-function track(type,who){
-  if(!shown?.jid) return;
+// 화면 이벤트 기록 (실패해도 화면에는 영향 없음). 판정 전에도 남기는 이벤트는 jid 없이 보낸다.
+const NO_JID=['visit','kakao_add','remind_add'];
+function track(type,who,src){
+  const jid=shown?.jid;
+  if(!jid&&!NO_JID.includes(type)) return;
   fetch(API_URL+'/event',{method:'POST',keepalive:true,headers:{'content-type':'application/json'},
-    body:JSON.stringify({type,who,jid:shown.jid,vid:VID})}).catch(()=>{});
+    body:JSON.stringify({type,who,jid,src,vid:VID})}).catch(()=>{});
 }
+// 유입 경로: ?ref=share|kakao|remind 또는 utm_source. 기록한 뒤 주소에서 지워 새로고침이 다시 세지 않게 한다.
+{ const u=new URL(location.href), raw=u.searchParams.get('ref')||u.searchParams.get('utm_source')||'';
+  let src=raw.toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,24);
+  if(!src) src=document.referrer&&new URL(document.referrer).host!==location.host?'referral':'direct';
+  track('visit',null,src);
+  if(raw){ ['ref','utm_source','utm_medium','utm_campaign'].forEach(k=>u.searchParams.delete(k)); history.replaceState(null,'',u); } }
 const el=(tag,cls,text)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; };
 
 /* ================= 오버레이 공통 ================= */
@@ -1256,6 +1304,131 @@ async function makeCard(){
   return c;
 }
 
+
+/* ================= 다시 오게 만들기: 내 정보 기억 · 오늘의 심사 · 지난 질문 · 시즌 질문 · 매일 알림 =================
+   출생 정보와 지난 질문은 이 기기(localStorage)에만 둔다. 서버 기록은 지금처럼 태어난 해까지만. */
+const KAKAO_CHANNEL=''; // 카카오톡 채널 홈 주소(pf.kakao.com/_xxxx)의 _로 시작하는 ID. 비어 있으면 버튼을 숨긴다.
+const store={
+  get:(k,d)=>{ try{ return JSON.parse(localStorage.getItem(k))??d; }catch{ return d; } },
+  set:(k,v)=>{ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v)); }catch{} },
+  // 손상되거나 모양이 다른 값은 없는 것으로 친다
+  arr:k=>{ const v=store.get(k,[]); return Array.isArray(v)?v.filter(x=>typeof x==='string'&&ISO.test(x)):[]; },
+  me:()=>{ const m=store.get('ss_me',null); return m&&ISO.test(m.birth)&&['여성','남성'].includes(m.gender)?m:null; },
+  hist:()=>{ const v=store.get('ss_hist',[]); return Array.isArray(v)?v.filter(it=>it&&typeof it.k==='string'&&ISO.test(it.d)&&it.p&&typeof it.p==='object'):[]; },
+};
+const ISO=/^\d{4}-\d{2}-\d{2}$/;
+// 오늘의 심사·연속 출석·지난 질문 날짜는 서버와 같은 KST 날짜로 센다
+const kstToday=()=>new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
+const addDays=(iso,n)=>new Date(Date.parse(iso)+n*864e5).toISOString().slice(0,10);
+const md=iso=>`${+iso.slice(5,7)}/${+iso.slice(8,10)}`;
+const daysBetween=(a,b)=>Math.round((Date.parse(b)-Date.parse(a))/864e5);
+// 일진: 2000-01-01이 무오일(60갑자 54번째). 서버와 같은 식.
+function dayPillar(iso){
+  const [y,m,d]=iso.split('-').map(Number), i=((Math.round((Date.UTC(y,m-1,d)-Date.UTC(2000,0,1))/864e5)+54)%60+60)%60;
+  return '갑을병정무기경신임계'[i%10]+'자축인묘진사오미신유술해'[i%12];
+}
+
+function remember(me,name){ if($('#remember').checked) store.set('ss_me',{...me,name}); }
+// 기억하기를 끄는 순간 이 기기에 남긴 출생 정보·지난 질문·출석을 지우고, 끈 상태를 기억한다
+$('#remember').addEventListener('change',e=>{
+  if(e.target.checked) store.set('ss_nomem',null);
+  else { ['ss_me','ss_hist','ss_days'].forEach(k=>store.set(k,null)); store.set('ss_nomem',1); }
+  renderHome();
+});
+function dailyP(){
+  const m=store.me(); if(!m) return null;
+  const t=kstToday();
+  return {mode:'daily',birth:m.birth,time:m.time,gender:m.gender,place:m.place,q:'오늘 하루, 어때?',today:t,src:'daily',
+    title:`오늘의 심사 · ${+t.slice(5,7)}월 ${+t.slice(8,10)}일 ${dayPillar(t)}일`};
+}
+function streak(){
+  const s=new Set(store.arr('ss_days')); let d=kstToday(), n=0;
+  if(!s.has(d)) d=addDays(d,-1); // 오늘 아직 안 봤으면 어제까지의 연속
+  while(s.has(d)){ n++; d=addDays(d,-1); }
+  return n;
+}
+// 판정이 끝난 뒤: 오늘의 심사는 연속 출석, 일반 질문은 지난 질문에 쌓고 지난 판정과 비교한다.
+function afterJudge(p,o,x){
+  if(!store.me()) return '';
+  const t=kstToday();
+  if(p.mode==='daily'){
+    const d=store.arr('ss_days'); if(!d.includes(t)) store.set('ss_days',[...d,t].slice(-400));
+    const n=streak(); return n>1?`${n}일 연속 오늘의 심사!`:'';
+  }
+  const k=JSON.stringify([p.mode,p.q,p.birth,p.time,p.gender,p.place,p.birth2||'',p.time2||'',p.gender2||'',p.place2||'']);
+  const h=store.hist(), prev=h.find(it=>it.k===k&&it.d!==t);
+  store.set('ss_hist',[{k,d:t,q:p.q,title:p.title||'',mode:p.mode,o,x,p},...h.filter(it=>it.k!==k)].slice(0,20));
+  return prev?`지난 판정 (${md(prev.d)}) ${prev.o} : ${prev.x} → 오늘 ${o} : ${x}`:'';
+}
+
+// 시즌 질문: 날짜에 맞춰 추천 질문 맨 앞에 붙는다.
+const SEASONS=(()=>{
+  const t=kstToday(), y=+t.slice(0,4), mmdd=t.slice(5), out=[];
+  const add=(from,to,q,love=false)=>{ if(from<=mmdd&&mmdd<=to) out.push({q,love}); };
+  add('01-01','02-04',`${y}년, 나에게 어떤 해일까?`);
+  add('02-05','02-14','밸런타인데이에 고백해도 될까?',true);
+  add('10-01','11-20','올해 안에 목표, 이룰 수 있을까?');
+  add('11-01','11-13','이번 시험, 잘 볼 수 있을까?');
+  add('11-21','12-31',`${y+1}년, 나에게 어떤 해일까?`);
+  add('12-10','12-25','크리스마스 전에 고백해도 될까?',true);
+  const me=store.me();
+  if(me&&[y-1,y,y+1].some(yy=>Math.abs(daysBetween(`${yy}-${me.birth.slice(5)}`,t))<=7)) out.push({q:'생일 맞은 새 1년, 어떨까?',love:false});
+  return out;
+})();
+const SEASON_QS=new Set(SEASONS.map(s=>s.q));
+function withSeason(list,love){ return [...SEASONS.filter(s=>s.love===love).map(s=>s.q),...list]; }
+
+function renderHome(){
+  const p=dailyP(), done=store.arr('ss_days').includes(kstToday()), n=streak();
+  $('#daily').hidden=!p;
+  if(p){
+    $('#dailySub').textContent=p.title.split(' · ')[1]+' · '+(done?`오늘 심사 완료 · ${n}일 연속`:n?`${n}일 연속 출석 중 · 오늘도 이어 가기`:'세 심사위원이 오늘 하루를 판정해요');
+    $('#dailyGo').textContent=done?'오늘 결과 다시 보기':'오늘 하루 심사받기';
+  }
+  const h=store.hist(), t=kstToday();
+  $('#hist').hidden=!h.length; $('#histN').textContent=`(${h.length})`;
+  $('#histList').replaceChildren(...h.map(it=>{
+    const li=el('li'), info=el('div'), age=daysBetween(it.d,t);
+    info.append(el('div',null,it.title||it.q),el('small',null,`${md(it.d)} · ${it.mode==='love'?'초록불 ':''}${it.o} : ${it.x}`));
+    if(age>=7) info.append(el('small','due',' · 다시 물어볼 때'));
+    const b=el('button',null,age?'오늘 다시 묻기':'결과 다시 보기'); b.type='button';
+    b.onclick=()=>run({...it.p,today:t,src:'history'});
+    li.append(info,b); return li;
+  }));
+}
+function renderRetain(){
+  const daily=shown?.p?.mode==='daily';
+  $('#dailyGo2').hidden=daily||!dailyP();
+  $('#retainTitle').textContent=daily?'내일의 심사는 자정에 열려요':'오늘의 심사는 매일 자정에 바뀌어요';
+}
+const goDaily=()=>{ const p=dailyP(); if(p) run(p); };
+$('#dailyGo').addEventListener('click',goDaily);
+$('#dailyGo2').addEventListener('click',goDaily);
+
+// 매일 알림: 서버 없이 캘린더 반복 일정(.ics)으로. 매일 08:30 KST에 사이트 링크가 뜬다.
+$('#remind').addEventListener('click',()=>{
+  const utc=x=>x.toISOString().replace(/[-:]|\.\d+/g,'');
+  const start=new Date(Date.parse(addDays(kstToday(),1)+'T08:30:00+09:00')), url=SITE+'?ref=remind'; // 내일 08:30 KST부터
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//samin-samsaek//daily//KO','BEGIN:VEVENT',
+    `UID:daily-${VID}@samin-samsaek`,`DTSTAMP:${utc(new Date())}`,`DTSTART:${utc(start)}`,'DURATION:PT10M','RRULE:FREQ=DAILY',
+    'SUMMARY:삼인삼색 오늘의 심사',`DESCRIPTION:${url}`,`URL:${url}`,
+    'BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:PT0M','DESCRIPTION:오늘의 심사가 열렸어요','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const a=el('a'); a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'})); a.download='samin-samsaek-daily.ics'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  track('remind_add',null,'ics');
+  $('#retainSub').textContent='받은 캘린더 파일을 열어 추가하면 매일 아침 8시 30분에 알려 드려요.';
+});
+if(KAKAO_CHANNEL){ const k=$('#kakao'); k.href=`https://pf.kakao.com/${KAKAO_CHANNEL}/friend`; k.hidden=false;
+  k.addEventListener('click',()=>track('kakao_add',null,'kakao')); }
+
+// 처음 열 때: 기억해 둔 출생 정보로 폼을 채우고, 오늘의 심사·지난 질문·시즌 질문을 그린다.
+{ const m=store.me();
+  if(store.get('ss_nomem',null)) $('#remember').checked=false;
+  if(m){ $('#birth').value=m.birth; $('#btime').value=m.time||''; $('#noTime').checked=!m.time; $('#btime').disabled=!m.time;
+    document.querySelectorAll('input[name=gender]').forEach(r=>r.checked=r.value===m.gender);
+    $('#place').value=m.place||''; $('#name').value=m.name||''; } }
+renderHome();
+renderChips(withSeason(QUESTIONS,false));
 
 /* ================= 3인 전체 총운 =================
    ① 입력 → ② 명식 계산(브라우저, chart.js) → ③ 시각 경계 검증(걸리면 후보 표로 묻기)
