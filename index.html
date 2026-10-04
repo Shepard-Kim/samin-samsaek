@@ -996,6 +996,7 @@ async function run(p){
   document.body.classList.add('open'); redraw();
   scrollTo({top:0,behavior:'instant'}); // 막이 열리면 전광판부터 보이게
 
+  const day=kstToday(); // 서버가 판정한 날 (자정 직전 요청이 자정 뒤에 끝나도 그날로 기록)
   const [{res,note,jid}] = await Promise.all([ask(p), wait(2200)]);
 
   for(const j of JUDGES){
@@ -1011,7 +1012,7 @@ async function run(p){
   const G2=(LOVE?{3:['ALL<br>GREEN','good'],2:['GREEN','good'],1:['RED','bad'],0:['ALL<br>RED','bad']}
                 :{3:['EXCELLENT','good'],2:['GOOD','good'],1:['NOT<br>GOOD','bad'],0:['BAD','bad']})[o];
   grade.className='grade '+G2[1]; delete $('#gradeTxt').dataset.dots; $('#gradeTxt').innerHTML=G2[0];
-  undots($('#status'),note||(jid?afterJudge(p,o,x):''));
+  undots($('#status'),note||(jid?afterJudge(p,o,x,day):''));
   if(o===3) fireworks();
   if(o===0){ JUDGES.forEach(j=>setState(j,'panic')); redraw();
     const b=$('#board'); b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
@@ -1348,16 +1349,17 @@ function streak(){
   return n;
 }
 // 판정이 끝난 뒤: 오늘의 심사는 연속 출석, 일반 질문은 지난 질문에 쌓고 지난 판정과 비교한다.
-function afterJudge(p,o,x){
+function afterJudge(p,o,x,t){
   if(!store.me()) return '';
-  const t=kstToday();
   if(p.mode==='daily'){
     const d=store.arr('ss_days'); if(!d.includes(t)) store.set('ss_days',[...d,t].slice(-400));
     const n=streak(); return n>1?`${n}일 연속 오늘의 심사!`:'';
   }
   const k=JSON.stringify([p.mode,p.q,p.birth,p.time,p.gender,p.place,p.birth2||'',p.time2||'',p.gender2||'',p.place2||'']);
-  const h=store.hist(), prev=h.find(it=>it.k===k&&it.d!==t);
-  store.set('ss_hist',[{k,d:t,q:p.q,title:p.title||'',mode:p.mode,o,x,p},...h.filter(it=>it.k!==k)].slice(0,20));
+  // 같은 질문의 직전 날짜 판정은 prev로 들고 간다 (같은 날 다시 봐도 비교가 사라지지 않게)
+  const h=store.hist(), old=h.find(it=>it.k===k);
+  const prev=old&&(old.d!==t?{d:old.d,o:old.o,x:old.x}:old.prev);
+  store.set('ss_hist',[{k,d:t,q:p.q,title:p.title||'',mode:p.mode,o,x,p,prev},...h.filter(it=>it.k!==k)].slice(0,20));
   return prev?`지난 판정 (${md(prev.d)}) ${prev.o} : ${prev.x} → 오늘 ${o} : ${x}`:'';
 }
 
