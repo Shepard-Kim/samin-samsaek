@@ -98,6 +98,11 @@ button,input,textarea{font:inherit;color:inherit}
 .judge{position:relative;display:flex;flex-direction:column;align-items:center;min-width:0}
 .judge canvas{width:100%;max-width:180px;aspect-ratio:48/64;image-rendering:pixelated;image-rendering:crisp-edges;display:block;transform-origin:50% 90%}
 .judge.think canvas{animation:tilt 1.1s steps(1) infinite}
+/* 팻말을 들기 직전: 그 심사위원에게만 조명, 나머지는 어둡게 */
+.judge.spot::before{content:"";position:absolute;left:50%;top:-30px;width:150%;height:calc(100% + 40px);translate:-50% 0;z-index:-1;pointer-events:none;
+  background:conic-gradient(from 160deg at 50% 0,transparent 0deg,rgba(255,247,214,.75) 14deg,rgba(255,247,214,.75) 26deg,transparent 40deg);animation:spoton .25s ease-out}
+.judges.spotting .judge:not(.spot) canvas{filter:brightness(.55) saturate(.7);transition:filter .2s}
+@keyframes spoton{from{opacity:0}}
 @keyframes tilt{0%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
 .qs{position:absolute;inset:0;pointer-events:none;display:none}
 .judge.think .qs{display:block}
@@ -199,6 +204,7 @@ button,input,textarea{font:inherit;color:inherit}
 .share-in{display:grid;gap:12px;justify-items:center;max-width:440px;width:100%}
 .share-in img{width:100%;max-height:70vh;object-fit:contain;border-radius:12px;border:4px solid var(--paper);background:var(--cream)}
 .share-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.share-q{display:flex;gap:6px;align-items:center;color:var(--paper);font-size:14px;cursor:pointer}
 .share-msg{margin:0;min-height:1.2em;color:var(--paper);font-size:14px;text-align:center}
 
 /* ---------- 3인 전체 총운 ---------- */
@@ -365,11 +371,19 @@ textarea{resize:none;height:54px}
 .err{color:#c0183a;font-size:13px;min-height:1.2em;margin:6px 0 0;text-align:center}
 .card .go{width:100%;margin-top:6px;font-size:21px;padding:10px}
 .card .fine{font-size:11px;color:var(--ink-soft);text-align:center;margin:8px 0 0}
+.card .fine a,.foot a{color:inherit}
 /* 오늘의 심사 · 지난 질문 · 시즌 질문 */
 .daily{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;margin:0 0 10px;padding:10px 12px;border:3px solid var(--ink);border-radius:14px;background:var(--plum);color:var(--paper)}
 .daily b{font-family:var(--f-disp);font-weight:400;font-size:19px;color:var(--amber)}
 .daily small{display:block;font-size:12px;color:#cdbfe6}
 .daily .btn{font-size:16px;padding:6px 12px}
+.sample{display:grid;gap:3px;margin:0 0 10px;padding:9px 12px;border:2px dashed rgba(43,33,64,.35);border-radius:14px;background:#fff;font-size:13px}
+.sample small{font-size:11px;color:var(--ink-soft)}
+.sample b{font-family:var(--f-disp);font-weight:400;font-size:17px}
+.sample i{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;font:normal 10px/1 var(--f-pix);color:#fff;vertical-align:-3px}
+.sample i.o{background:#1fae5f} .sample i.x{background:#e0283c}
+.sample strong{font-family:var(--f-disp);font-weight:400;color:#1f9e57}
+.sample em{font-style:normal;color:var(--ink-soft);font-size:12px}
 .hist{margin:0 0 10px;border:2px solid var(--ink);border-radius:14px;background:#fff}
 .hist summary{cursor:pointer;padding:7px 12px;font-family:var(--f-disp);font-size:16px}
 .hist ul{list-style:none;margin:0;padding:0 8px 8px;display:grid;gap:6px}
@@ -431,10 +445,10 @@ textarea{resize:none;height:54px}
 
 
     <section class="paid">
-      <p><span id="paidLead">왜 O를 들었는지, 왜 X를 들었는지 궁금하다면 심사위원의 상세 풀이를 열어보세요.</span> <span class="beta">베타 기간 무료</span></p>
+      <p><span id="paidLead">왜 O를 들었는지, 왜 X를 들었는지 궁금하다면 심사위원의 상세 풀이를 열어보세요.</span> <span class="beta">베타 무료 · 정식 출시 후 유료</span></p>
       <div class="btns">
-        <button type="button" id="buyOne" disabled aria-expanded="false" aria-controls="pick"><b>한 명 상세 풀이</b> <s>1,000원</s></button>
-        <button type="button" id="buyAll" disabled><b>세 명 전부</b> <s>2,500원</s></button>
+        <button type="button" id="buyOne" disabled aria-expanded="false" aria-controls="pick"><b>한 명 상세 풀이</b></button>
+        <button type="button" id="buyAll" disabled><b>세 명 전부</b></button>
       </div>
       <div class="pick" id="pick" hidden>
         <span>누구의 풀이를 열어 볼까요?</span>
@@ -463,7 +477,7 @@ textarea{resize:none;height:54px}
       <button class="btn" id="totalOpen" type="button">3인 전체 총운 보기 <span class="beta">베타 무료</span></button>
     </section>
 
-    <p class="foot">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.</p>
+    <p class="foot">AI가 만든 재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요. · <a href="privacy.html">개인정보처리방침</a></p>
   </div>
 </main>
 
@@ -506,7 +520,7 @@ textarea{resize:none;height:54px}
     </header>
     <h2 class="sheet-q" id="sheetQ"></h2>
     <div id="sheetBody"></div>
-    <p class="foot">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.</p>
+    <p class="foot">AI가 만든 재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요. · <a href="privacy.html">개인정보처리방침</a></p>
   </div>
 </div>
 
@@ -514,6 +528,7 @@ textarea{resize:none;height:54px}
 <div class="sheet share" id="shareBox" hidden role="dialog" aria-modal="true" aria-label="결과 공유">
   <div class="share-in">
     <img id="shareImg" alt="판정 결과 이미지">
+    <label class="share-q"><input type="checkbox" id="shareQ"> 질문도 함께 보여 주기</label>
     <div class="share-btns">
       <button class="btn" id="shareGo" type="button" disabled>결과 링크 만드는 중…</button>
       <button class="btn ghost" id="shareSave" type="button">이미지 저장</button>
@@ -533,6 +548,12 @@ textarea{resize:none;height:54px}
     <div class="daily" id="daily" hidden>
       <div><b id="dailyTitle">오늘의 심사</b><small id="dailySub"></small></div>
       <button class="btn" id="dailyGo" type="button">오늘 하루 심사받기</button>
+    </div>
+    <div class="sample" id="sample" hidden aria-label="결과 예시">
+      <small>이런 결과가 나와요 · 예시</small>
+      <b>"올해 이직해도 될까?"</b>
+      <span>사주 할머니 <i class="x">X</i> 자미두수 도사 <i class="o">O</i> 베딕 구루 <i class="o">O</i> → <strong>2 : 1 GOOD</strong></span>
+      <em>할머니: "갑목 일간에 병오 세운. 움직일 해는 맞아. 계약서는 두 번 읽어."</em>
     </div>
     <details class="hist" id="hist" hidden><summary>지난 질문 <span id="histN"></span></summary><ul id="histList"></ul></details>
     <div class="modes" role="radiogroup" aria-label="심사 방식">
@@ -581,7 +602,7 @@ textarea{resize:none;height:54px}
     </div>
     <p class="err" id="err" role="alert"></p>
     <button class="btn go" id="go" type="submit">질문 전달하기</button>
-    <p class="fine">재미로 보는 운세입니다. 중요한 결정은 스스로의 판단을 믿으세요.<br>서비스 개선을 위해 질문과 이용 기록을 저장해요. 생년월일은 태어난 해만 저장해요. 기억하기를 켜면 출생 정보와 지난 질문은 이 기기에만 남아요.</p>
+    <p class="fine"><b>AI(Anthropic Claude)가</b> 출생 정보로 만드는 재미로 보는 운세입니다. 만 14세 이상만 이용할 수 있어요.<br>입력한 정보는 판정을 만들려고 AI에 보내고, 서비스 개선을 위해 질문과 이용 기록을 1년간 저장해요(생년월일은 태어난 해만). <a href="privacy.html">개인정보처리방침</a></p>
   </form>
 </div>
 
@@ -591,7 +612,7 @@ textarea{resize:none;height:54px}
 (() => {
 const $ = s => document.querySelector(s);
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const QUESTIONS = ['올해 이직해도 될까?','올해 연애운 좋을까?','올해 돈이 모일까?','지금 시작하려는 일, 잘 될까?','직접 쓰기'];
+const QUESTIONS = ['올해 이직해도 될까?','올해 연애운 좋을까?','올해 돈이 모일까?','직접 쓰기'];
 const LOVE_QUESTIONS = ['우리 궁합 어때?','이 사람과 잘 될까?','결혼까지 갈 수 있을까?','다시 만나도 될까?','직접 쓰기'];
 let LOVE=false; // 무대가 그린라이트 모드인지 (심사 시작 때 정해짐)
 const JUDGES = [
@@ -915,6 +936,8 @@ $('#noTime').addEventListener('change',e=>{ $('#btime').disabled=e.target.checke
 $('#noTime2').addEventListener('change',e=>{ $('#btime2').disabled=e.target.checked; });
 const isoOf=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const todayISO=()=>isoOf(new Date());
+// 만 14세 미만은 이용할 수 없다 (서버도 다시 막는다)
+const under14=b=>{ const t=todayISO(); return `${+t.slice(0,4)-14}${t.slice(4)}`<b; };
 $('#birth').max=todayISO(); $('#birth2').max=todayISO();
 
 $('#entry').addEventListener('submit',e=>{
@@ -926,6 +949,7 @@ $('#entry').addEventListener('submit',e=>{
     const v=$('#birth'+sfx).value;
     if(!v){ err(label+'생년월일을 넣어 주세요.'); $('#birth'+sfx).focus(); return; }
     if(v>todayISO()){ err(label+'생년월일이 오늘보다 뒤예요. 날짜를 다시 확인해 주세요.'); return; }
+    if(under14(v)){ err(sfx?'상대가 만 14세 미만이면 심사할 수 없어요.':'만 14세 이상만 이용할 수 있어요.'); $('#birth'+sfx).focus(); return; }
   }
   if(!q){ err('심사받을 질문을 적어 주세요.'); $('#custom').focus(); return; }
   err('');
@@ -1039,17 +1063,24 @@ async function run(p){
       j.bubble.textContent=j.agony; setState(j,'agonize'); dots(j.line,'깊이 고뇌하는 중'); });
     if(JUDGES.some(j=>!j.verdict)) dots($('#status'),'심사위원이 깊이 고민하고 있어요'); redraw(); }, Math.max(0,12500-(performance.now()-runStarted)));
 
-  // 끝난 순서대로 팻말을 든다 (팻말 사이는 0.8초 이상 띄워 한 명씩 보이게)
+  // 끝난 순서대로 팻말을 든다 (팻말 사이는 조명 뜸까지 합쳐 0.8초 이상 띄워 한 명씩 보이게)
   for(let shown=0, last=0; shown<3;){
     if(ready.length){
       const id=ready.shift(), j=JUDGES.find(x=>x.id===id);
-      await wait(Math.max(0,800-(performance.now()-last)));
+      await wait(Math.max(0,350-(performance.now()-last)));
+      // 조명을 비추고 잠깐 뜸을 들인다. 앞의 둘이 1:1로 갈렸으면 마지막 한 표는 더 길게.
+      const decider=shown===2&&JUDGES.filter(x=>x.verdict==='O').length===1;
+      j.col.classList.add('spot'); judgesEl.classList.add('spotting');
+      if(decider) dots($('#status'),LOVE?'마지막 불빛이 결과를 정해요':'마지막 한 표가 결과를 정해요');
+      await wait(decider?1100:450);
       j.verdict=res[j.id].verdict; setState(j,'raise1'); redraw();
       await wait(170); setState(j,'raise2'); redraw();
       j.mark.className='lamp '+(j.verdict==='O'?'o':'x'); j.mark.textContent=j.verdict;
       if(LOVE) j.plate.classList.add(j.verdict==='O'?'on-o':'on-x');
       j.line.className='line'; undots(j.line,res[j.id].line);
-      last=performance.now(); shown++; continue;
+      last=performance.now();
+      await wait(350); j.col.classList.remove('spot'); judgesEl.classList.remove('spotting');
+      shown++; continue;
     }
     if(info){ const m=mock(p); JUDGES.forEach(j=>{ if(!res[j.id]){ res[j.id]=m[j.id]; ready.push(j.id); } }); if(!info.note) info.note=LOST_NOTE; continue; }
     await new Promise(r=>{ nudge=r; });
@@ -1217,32 +1248,41 @@ async function copyLink(text,url){
   try{ await navigator.clipboard.writeText(text+' '+url); $('#shareMsg').textContent='결과 링크를 복사했어요. 붙여 넣으면 결과 이미지가 함께 보여요.'; }
   catch{ $('#shareMsg').textContent=url; }
 }
+// 질문(그린라이트는 이름까지)은 기본으로 가린다: 이직처럼 사적인 질문도 부담 없이 공유하게.
+const showQ=()=>$('#shareQ').checked;
+const shareTitle=()=>showQ()?(shown.p.title||shown.p.q):(shown.p.mode==='love'?'두 사람의 궁합 (비밀 질문)':'비밀 질문 하나');
 const shareText=()=>shown.p.mode==='love'
-  ? `"${shown.p.title}" 그린라이트 결과 초록불 ${shown.o} : ${shown.x} 빨간불! 우리도 궁합 보기`
-  : `"${shown.p.q}" 삼인삼색 심사 결과 ${shown.o} : ${shown.x} ${shown.grade}! 나도 심사받기`;
+  ? `${showQ()?'"'+shown.p.title+'" ':''}그린라이트 결과 초록불 ${shown.o} : ${shown.x} 빨간불! 우리도 궁합 보기`
+  : `${showQ()?'"'+shown.p.q+'" ':''}삼인삼색 심사 결과 ${shown.o} : ${shown.x} ${shown.grade}! 너라면 O? X? 나도 심사받기`;
+$('#shareQ').addEventListener('change',()=>openShare(true));
 
-async function openShare(){
+let shareGen=0;
+async function openShare(again){
   if(!shown) return;
-  track('share_open');
+  if(again!==true){ track('share_open'); $('#shareQ').checked=false; }
+  const gen=++shareGen, key=showQ()?'q':'secret'; shown.shareUrls??={};
   const go=$('#shareGo');
   $('#shareMsg').textContent='이미지를 만드는 중이에요…';
   $('#shareImg').removeAttribute('src');
   go.disabled=true; go.textContent='결과 링크 만드는 중…';
-  openLayer($('#shareBox'),$('#shareClose'));
+  if(again!==true) openLayer($('#shareBox'),$('#shareClose'));
   const toBlob=c=>new Promise(r=>c.toBlob(r,'image/png'));
   const card=await toBlob(await makeCard());
+  if(gen!==shareGen) return; // 그사이 질문 보이기를 바꿈
   shareFile=new File([card],`samin-samsaek-${new Date().toISOString().slice(0,10)}.png`,{type:'image/png'});
   $('#shareImg').src=URL.createObjectURL(card);
   $('#shareMsg').textContent='';
-  if(shown.real&&shown.jid&&!shown.shareUrl){
+  if(shown.real&&shown.jid&&!shown.shareUrls[key]){
     try{
       const f=new FormData();
-      f.append('jid',shown.jid); f.append('vid',VID); f.append('q',shown.p.title||shown.p.q);
+      f.append('jid',shown.jid); f.append('vid',VID); f.append('q',shareTitle());
       f.append('card',shareFile); f.append('og',new File([await toBlob(await makeOg())],'og.png',{type:'image/png'}));
       const r=await fetch(API_URL+'/share',{method:'POST',body:f,signal:AbortSignal.timeout(30000)});
-      if(r.ok) shown.shareUrl=(await r.json()).url;
+      if(r.ok) shown.shareUrls[key]=(await r.json()).url;
     }catch{}
   }
+  if(gen!==shareGen) return;
+  shown.shareUrl=shown.shareUrls[key];
   go.disabled=false;
   go.textContent=CAN_SHARE?'결과 링크 공유하기':'결과 링크 복사';
   if(!shown.shareUrl) $('#shareMsg').textContent='결과 링크를 만들지 못해 사이트 링크로 공유해요. 이미지는 저장해서 함께 올려 주세요.';
@@ -1262,7 +1302,7 @@ async function makeOg(){
   for(let X=60;X<=1140;X+=30){ x.beginPath(); x.arc(X,34,5,0,7); x.arc(X,254,5,0,7); x.fill(); }
   x.fillStyle=C.lav; x.font='26px "Do Hyeon"'; x.fillText(LOVE?'삼인삼색 그린라이트':'삼인삼색 운세 오디션',80,92);
   x.fillStyle=C.amber; x.font='50px "Do Hyeon"'; x.shadowColor='rgba(255,160,40,.6)'; x.shadowBlur=12;
-  wrapText(x,shown.p.title||shown.p.q,560,2).forEach((l,i)=>x.fillText(l,80,160+i*58));
+  wrapText(x,shareTitle(),560,2).forEach((l,i)=>x.fillText(l,80,160+i*58));
   x.font='48px "Press Start 2P"'; x.textAlign='right';
   const so=String(shown.o), sx=String(shown.x), sep=' : ';
   let R=900; x.fillStyle=C.xx; x.shadowColor=C.xx; x.fillText(sx,R,188); R-=x.measureText(sx).width;
@@ -1279,7 +1319,7 @@ async function makeOg(){
   rrect(x,30,508,1140,64,16); x.fillStyle=C.teal; x.fill(); x.lineWidth=6; x.strokeStyle=C.ink; x.stroke();
   x.font='28px "Do Hyeon"';
   JUDGES.forEach((j,i)=>{ const cx=300+i*300; rrect(x,cx-120,519,240,42,10); x.fillStyle=C.paper; x.fill(); x.lineWidth=3; x.stroke(); x.fillStyle=C.ink; x.fillText(j.name,cx,550); });
-  x.fillStyle=C.ink; x.font='28px "Do Hyeon"'; x.fillText((LOVE?'우리도 궁합 보기':'나도 심사받기')+' → mingou0131.github.io/samin-samsaek',W/2,610);
+  x.fillStyle=C.ink; x.font='28px "Do Hyeon"'; x.fillText((LOVE?'우리도 궁합 보기':'너라면 O? X?')+' → mingou0131.github.io/samin-samsaek',W/2,610);
   return c;
 }
 
@@ -1319,7 +1359,7 @@ async function makeCard(){
   x.textBaseline='alphabetic';
   x.fillStyle=C.lav; x.font='30px "Do Hyeon"'; x.fillText(LOVE?'삼인삼색 그린라이트':'삼인삼색 운세 오디션',96,118);
   x.fillStyle=C.amber; x.font='58px "Do Hyeon"'; x.shadowColor='rgba(255,160,40,.6)'; x.shadowBlur=14;
-  wrapText(x,shown.p.title||shown.p.q,560,2).forEach((l,i)=>x.fillText(l,96,196+i*66));
+  wrapText(x,shareTitle(),560,2).forEach((l,i)=>x.fillText(l,96,196+i*66));
   x.font='56px "Press Start 2P"';
   const so=String(shown.o), sx=String(shown.x);
   x.fillStyle=C.o; x.shadowColor=C.o; x.fillText(so,96,338);
@@ -1352,8 +1392,8 @@ async function makeCard(){
   });
 
   x.fillStyle=C.ink; x.font='30px "Do Hyeon"'; x.textAlign='center';
-  x.fillText((LOVE?'우리도 궁합 보기':'나도 심사받기')+' → mingou0131.github.io/samin-samsaek',W/2,1292);
-  x.fillStyle=C.soft; x.font='22px "Gowun Dodum"'; x.fillText('재미로 보는 운세입니다',W/2,1326);
+  x.fillText((LOVE?'우리도 궁합 보기':'너라면 O? X?')+' → mingou0131.github.io/samin-samsaek',W/2,1292);
+  x.fillStyle=C.soft; x.font='22px "Gowun Dodum"'; x.fillText('AI가 만든 재미로 보는 운세입니다',W/2,1326);
   return c;
 }
 
@@ -1435,6 +1475,7 @@ function withSeason(list,love){ return [...SEASONS.filter(s=>s.love===love).map(
 function renderHome(){
   const p=dailyP(), done=store.arr('ss_days').includes(kstToday()), n=streak();
   $('#daily').hidden=!p;
+  $('#sample').hidden=!!p||store.hist().length>0; // 처음 온 사람에게만 예시
   if(p){
     $('#dailySub').textContent=p.title.split(' · ')[1]+' · '+(done?`오늘 심사 완료 · ${n}일 연속`:n?`${n}일 연속 출석 중 · 오늘도 이어 가기`:'세 심사위원이 오늘 하루를 판정해요');
     $('#dailyGo').textContent=done?'오늘 결과 다시 보기':'오늘 하루 심사받기';
@@ -1518,6 +1559,7 @@ $('#totalForm').addEventListener('submit',async e=>{
   const name=$('#tName').value.trim(), birth=$('#tBirth').value, time=$('#tTime').value;
   if(!name) return err('이름을 넣어 주세요.');
   if(!birth||birth>todayISO()) return err('생년월일을 확인해 주세요.');
+  if(under14(birth)) return err('만 14세 이상만 이용할 수 있어요.');
   if(!time) return err('태어난 시각을 넣어 주세요. 총운은 시각이 있어야 계산할 수 있어요.');
   let place, lat, lon; const sv=$('#tPlace').value;
   if(sv==='other'){ lat=parseFloat($('#tLat').value); lon=parseFloat($('#tLon').value); place='직접 입력';
