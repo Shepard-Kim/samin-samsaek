@@ -307,7 +307,13 @@ body.open .curtain.r{transform:translateX(96%)}
 
 /* 출연 신청서 */
 .entry{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:40px 16px 16px;overflow-y:auto;transition:opacity .25s,visibility .25s}
-body.open .entry{opacity:0;visibility:hidden}
+body.open .entry,body.closing .entry{opacity:0;visibility:hidden}
+/* 막이 열리기 전: 닫힌 막 위로 스포트라이트가 오가고 "입장 중" */
+.curtain-msg{position:fixed;inset:0;z-index:22;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .25s;overflow:hidden}
+body.closing:not(.open) .curtain-msg{opacity:1}
+.curtain-msg::before{content:"";position:absolute;width:min(80vw,460px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,247,214,.5),transparent 62%);animation:sweep 1.8s ease-in-out infinite alternate}
+.curtain-msg span{position:relative;font-family:var(--f-disp);font-size:clamp(28px,7vw,46px);color:var(--bulb);text-shadow:0 3px 0 var(--tomato-dk),0 0 18px rgba(255,217,102,.7)}
+@keyframes sweep{from{transform:translateX(-22vw)}to{transform:translateX(22vw)}}
 .card{
   width:100%;max-width:440px;box-sizing:border-box;border-radius:22px;border:8px dotted var(--bulb);
   background:linear-gradient(var(--paper),var(--paper)) padding-box,linear-gradient(var(--plum),var(--plum)) border-box;
@@ -385,6 +391,7 @@ textarea{resize:none;height:54px}
 @media (max-width:520px){ .card{padding:14px 14px 12px} .brand{font-size:15px} }
 @media (prefers-reduced-motion:reduce){
   .curtain,.entry{transition:none}
+  .curtain-msg::before{animation:none}
   .stage::before,.board,.card,.judge.think canvas,.bubble,.board.flash,.wait-box img{animation:none}
   .qs i{animation:none;opacity:1}
 }
@@ -519,6 +526,7 @@ textarea{resize:none;height:54px}
 <div class="curtain l" aria-hidden="true"></div>
 <div class="curtain r" aria-hidden="true"></div>
 <div class="valance" aria-hidden="true"></div>
+<div class="curtain-msg" aria-hidden="true"><span id="curtainMsg">심사위원 입장 중</span></div>
 
 <div class="entry" id="entryWrap">
   <form class="card" id="entry" novalidate>
@@ -587,9 +595,9 @@ const QUESTIONS = ['올해 이직해도 될까?','올해 연애운 좋을까?','
 const LOVE_QUESTIONS = ['우리 궁합 어때?','이 사람과 잘 될까?','결혼까지 갈 수 있을까?','다시 만나도 될까?','직접 쓰기'];
 let LOVE=false; // 무대가 그린라이트 모드인지 (심사 시작 때 정해짐)
 const JUDGES = [
-  {id:'saju', name:'사주 할머니',  sys:'한국 · 사주팔자',   shout:'안 돼. 다음.', loveShout:'빨간불. 끝.', phase:0,   period:3.1},
-  {id:'jami', name:'자미두수 도사', sys:'중국 · 자미두수',   shout:'不可! 절대 불가하오!', loveShout:'인연이 아니오!', phase:1.3, period:3.9},
-  {id:'vedic',name:'베딕 구루',    sys:'인도 · 베딕 점성술', shout:'노노노… 평온하게, 친구여', loveShout:'노노노… 고요히 보내 주세요', phase:2.2, period:2.6},
+  {id:'saju', name:'사주 할머니',  sys:'한국 · 사주팔자',   shout:'안 돼. 다음.', loveShout:'빨간불. 끝.', agony:'…까다롭군.', phase:0,   period:3.1},
+  {id:'jami', name:'자미두수 도사', sys:'중국 · 자미두수',   shout:'不可! 절대 불가하오!', loveShout:'인연이 아니오!', agony:'음… 얽혔소', phase:1.3, period:3.9},
+  {id:'vedic',name:'베딕 구루',    sys:'인도 · 베딕 점성술', shout:'노노노… 평온하게, 친구여', loveShout:'노노노… 고요히 보내 주세요', agony:'더 깊이…', phase:2.2, period:2.6},
 ];
 
 /* ================= 손으로 찍은 스프라이트 (32×44, 왼쪽 절반을 좌우 반전) =================
@@ -758,11 +766,13 @@ function eyes(kind,look,id){
   if(kind==='blink'){ PR(8,17,4,1,OL); PR(20,17,4,1,OL); return; }
   if(kind==='happy'){ P([[8,17],[9,16],[10,16],[11,17],[20,17],[21,16],[22,16],[23,17]],OL); return; }
   if(kind==='angry'){ PR(8,16,4,2,OL); PR(20,16,4,2,OL); P([[9,16],[22,16]],WHITE); return; }
+  if(kind==='agonize'){ P([[8,16],[9,16],[10,17],[11,17],[20,17],[21,17],[22,16],[23,16]],OL); return; } // 질끈 감은 눈
   if(kind==='panic'){ PR(8,15,4,4,OL); PR(9,16,2,2,WHITE); PR(20,15,4,4,OL); PR(21,16,2,2,WHITE); P([[9+(look>0),16],[21+(look>0),16]],OL); }
 }
 function brows(kind,id){
   const c=BROW[id];
   if(kind==='angry'||(id==='saju'&&(kind==='idle'||kind==='blink'))){ P([[8,12],[9,12],[10,13],[11,13],[23,12],[22,12],[21,13],[20,13]],c); }
+  else if(kind==='agonize'){ P([[8,13],[9,13],[10,12],[11,12],[20,12],[21,12],[22,13],[23,13]],c); } // 찌푸린 미간
   else if(kind==='panic'){ P([[8,14],[9,13],[10,13],[11,12],[23,14],[22,13],[21,13],[20,12]],c); }
   else if(kind==='think'){ PR(8,12,4,1,c); PR(20,14,4,1,c); }
   else if(kind==='happy'){ PR(8,12,4,1,c); PR(20,12,4,1,c); }
@@ -774,6 +784,7 @@ function mouth(kind,id){
   else if(kind==='angry'){ PR(13,19,6,3,OL); PR(14,20,4,1,WHITE); PR(16,20,1,1,OL); }
   else if(kind==='panic'){ PR(14,19,4,4,OL); PR(15,20,2,2,TONGUE); }
   else if(kind==='think'){ PR(15,20,2,2,OL); }
+  else if(kind==='agonize'){ P([[14,20],[15,19],[16,20],[17,19],[18,20]],OL); } // 일그러진 입
   else if(id==='saju'){ PR(14,20,3,1,MOUTH); PR(17,19,2,1,MOUTH); }
   else { PR(14,20,4,1,MOUTH); P([[13,19],[18,19]],MOUTH); }
 }
@@ -796,6 +807,7 @@ function drawJudge(j,t){
   if(st==='raise2'&&v==='O') oy=-[0,1,2,1][f(10)%4];
   if(st==='raise2'&&v==='X'&&!REDUCED) ox=f(28)%2?1:-1;
   if(st==='panic') oy=-[0,2,4,5,4,2][f(14)%6];
+  if(st==='agonize'){ ox=[0,1,0,-1][f(1.5)%4]; oy=f(.8)%2; }   // 천천히 몸을 흔들며 고뇌
   g.setTransform(1,0,0,1,ox,oy);
 
   let face='idle', look=0;
@@ -803,6 +815,7 @@ function drawJudge(j,t){
   if(st==='think'){ face='think'; look=[-1,1][f(2)%2]; }
   if(st==='raise2') face=v==='O'?'happy':'angry';
   if(st==='panic') face='panic';
+  if(st==='agonize') face='agonize';
 
   let rh=[37,57], lh=[11,57];
   if(st==='idle'){
@@ -811,6 +824,7 @@ function drawJudge(j,t){
     if(id==='vedic'){ const a=ph*3; lh=[18+Math.round(Math.cos(a)),49+Math.round(Math.sin(a))]; } // 염주 굴리기
   }
   if(st==='think') rh=[30,41+f(4)%2];                               // 턱 괴기
+  if(st==='agonize') rh=[31,29+f(1.5)%2];                           // 이마를 짚기
   if(!LOVE){
     if(st==='raise1') rh=[41,36];
     if(st==='raise2') rh = v==='O' ? [39+[0,1,0,-1][f(6)%4],21] : [39+(f(20)%2?1:-1),21+f(20)%2];
@@ -836,6 +850,7 @@ function drawJudge(j,t){
   hand(rh[0],rh[1],pal);
 
   if(st==='think') GO(QMARK,40,4+f(3)%2,'#ffd23f');
+  if(st==='agonize') GO(DROP,8,28+Math.floor((tt*6)%6),'#8fdcff');  // 식은땀
   if(st==='raise2'&&v==='X'&&(REDUCED||f(4)%2===0)) GO(VEIN,33,30,'#ff3b4a');
   if(st==='panic'){ GO(VEIN,33,30,'#ff3b4a');
     [[8,30],[38,32]].forEach(([x,y],k)=>GO(DROP,x,y+((tt*18+k*5)%9),'#8fdcff')); }
@@ -855,7 +870,7 @@ JUDGES.forEach(j=>{
   row.innerHTML=`<div class="lamp" aria-hidden="true"></div><div><div class="who">${j.name}</div><div class="line wait">막이 열리면 심사를 시작해요.</div></div>`;
   reviewsEl.append(row); j.mark=row.querySelector('.lamp'); j.line=row.querySelector('.line');
 });
-function setState(j,s){ j.state=s; j.col.classList.toggle('think',s==='think'); j.bubble.hidden=s!=='panic'; }
+function setState(j,s){ j.state=s; j.col.classList.toggle('think',s==='think'); j.bubble.hidden=s!=='panic'&&s!=='agonize'; }
 
 const t0=performance.now(); let last=-1e9;
 function loop(now){
@@ -928,22 +943,13 @@ $('#entry').addEventListener('submit',e=>{
 $('#again').addEventListener('click',()=>{
   track('again');
   renderHome();
-  document.body.classList.remove('open');
+  document.body.classList.remove('open','closing');
   JUDGES.forEach(j=>setState(j,'idle')); redraw();
   setResult(null);
   setTimeout(()=>$('#go').focus(),REDUCED?0:500);
 });
 
 /* ================= 판정 ================= */
-function normalize(r){
-  const out={};
-  for(const j of (r&&Array.isArray(r.judges)?r.judges:[])){
-    const v=String(j&&j.verdict||'').toUpperCase();
-    if(JUDGES.some(x=>x.id===j.id)&&(v==='O'||v==='X')&&typeof j.line==='string') out[j.id]={verdict:v,line:j.line.trim().slice(0,140)};
-  }
-  if(Object.keys(out).length<3) throw {code:'bad_shape'};
-  return out;
-}
 
 // AI를 못 쓰는 환경용 모의 판정 (입력값 해시로 고정)
 const MOCK={
@@ -966,20 +972,42 @@ function mock(p){ const h=hash(JSON.stringify(p)), out={}, M=p.mode==='love'?MOC
 const API_URL='https://samin-samsaek-judge.mingou0131.workers.dev';
 // 방문자 구분용 임의 ID (재질문·재방문 분석용, 개인을 알아볼 수 없음)
 const VID=(()=>{ try{ let v=localStorage.getItem('ss_vid'); if(!v){ v=crypto.randomUUID(); localStorage.setItem('ss_vid',v); } return v; }catch{ return crypto.randomUUID(); } })();
-async function ask(p){
+// 간이 명식 계산 모듈은 페이지가 열리면 미리 받아 둔다. 심사 요청에 계산값을 실어 보내면 판정이 빨라진다.
+const quickLib=import('./quick.js?v=1').catch(()=>null);
+async function chartsFor(p){
+  const lib=await Promise.race([quickLib,new Promise(r=>setTimeout(r,1500))]); // 아직 못 받았으면 계산값 없이 보낸다
+  if(!lib) return {};
+  const t=kstToday(), one=x=>{ try{ return lib.quickChart(x,t); }catch{ return null; } };
+  return p.mode==='love' ? {chart:one(p), chart2:one({birth:p.birth2,time:p.time2,gender:p.gender2})} : {chart:one(p)};
+}
+// 판정은 심사위원별로 끝나는 순서대로 한 줄씩 온다. onJudge(id,{verdict,line})
+const RATE_NOTE='심사 요청이 너무 잦아요. 1분 뒤에 다시 해 보세요. 이번 판정은 연습 판정이에요.';
+const LOST_NOTE='심사위원 연결이 잠시 끊겨 연습 판정을 보여드려요. 잠시 뒤 다시 해 보세요.';
+async function ask(p,onJudge){
   try{
-    const r=await fetch(API_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...p,vid:VID}),signal:AbortSignal.timeout(45000)});
-    if(r.status===429) return {res:mock(p),note:'심사 요청이 너무 잦아요. 1분 뒤에 다시 해 보세요. 이번 판정은 연습 판정이에요.'};
+    // 계산값은 판정 ID에도 들어가므로 p에 남겨 둔다 (상세 풀이·공유가 같은 판정을 찾도록)
+    Object.assign(p,{chart:undefined,chart2:undefined},await chartsFor(p)); // 지난 질문에 남은 예전 계산값은 버린다
+    const r=await fetch(API_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...p,stream:1,vid:VID}),signal:AbortSignal.timeout(40000)});
+    if(r.status===429) return {note:RATE_NOTE};
     if(!r.ok) throw new Error('HTTP '+r.status);
-    const d=await r.json();
-    return {res:normalize(d),note:'',jid:d.jid,day:ISO.test(d.day)?d.day:null};
+    const reader=r.body.getReader(), dec=new TextDecoder(); let buf='';
+    for(;;){ const {value,done}=await reader.read(); if(done) break; buf+=dec.decode(value,{stream:true});
+      let i; while((i=buf.indexOf('\n'))>=0){ const line=buf.slice(0,i); buf=buf.slice(i+1); if(!line) continue;
+        const m=JSON.parse(line);
+        if(m.type==='judge'&&JUDGES.some(j=>j.id===m.id)&&(m.verdict==='O'||m.verdict==='X')&&typeof m.line==='string') onJudge(m.id,{verdict:m.verdict,line:m.line.trim().slice(0,140)});
+        if(m.type==='done') return {note:'',jid:m.jid,day:ISO.test(m.day)?m.day:null};
+        if(m.type==='error') return {note:m.code==='rate_limited'?RATE_NOTE:LOST_NOTE};
+      } }
+    throw new Error('stream ended');
   }catch(e){
-    return {res:mock(p),note:'심사위원 연결이 잠시 끊겨 연습 판정을 보여드려요. 잠시 뒤 다시 해 보세요.'};
+    return {note:LOST_NOTE};
   }
 }
 
 const wait=ms=>new Promise(r=>setTimeout(r,REDUCED?0:ms));
-let running=false;
+let running=false, runStarted=0;
+// 판정을 기다리다 떠나는 사람: 얼마나 기다렸는지 남긴다 (대기 시간 한계를 실제 데이터로 보기 위해)
+addEventListener('pagehide',()=>{ if(runStarted) track('wait_abandon',null,null,Math.round(performance.now()-runStarted)); });
 async function run(p){
   if(running) return; running=true;
   const again=$('#again'); again.disabled=true; dots(again,'심사 중');
@@ -993,21 +1021,44 @@ async function run(p){
   dots($('#status'),LOVE?'세 심사위원이 두 사람의 명반을 맞대 보는 중':'세 심사위원이 명반과 차트를 펼치는 중');
   JUDGES.forEach(j=>{ setState(j,'think'); j.verdict=null; j.mark.className='lamp'; j.mark.textContent='?';
     j.line.className='line wait'; dots(j.line,'심사 중'); });
-  document.body.classList.add('open'); redraw();
   scrollTo({top:0,behavior:'instant'}); // 막이 열리면 전광판부터 보이게
 
-  const sent=kstToday();
-  const [{res,note,jid,day:judged}] = await Promise.all([ask(p), wait(2200)]);
-  const day=judged||sent; // 서버가 판정한 날로 기록 (자정을 넘겨 끝나도 그날)
+  // 시간표 (서버와 같음): 막 2.5초 → 무대 10초 "심사 중" → 아직 못 든 심사위원은 5초 고뇌 → 17.5초에 서버가 빠른 판정으로 마무리
+  runStarted=performance.now();
+  const sent=kstToday(), res={}, ready=[];
+  let info=null, nudge=null;
+  const poke=()=>{ nudge?.(); nudge=null; };
+  ask(p,(id,r)=>{ if(!res[id]){ res[id]=r; ready.push(id); poke(); } }).then(x=>{ info=x; poke(); });
+  // 막 연출: 막이 닫힌 채 스포트라이트와 "입장 중" → 막이 열림
+  dots($('#curtainMsg'),LOVE?'두 사람의 무대 준비 중':'심사위원 입장 중');
+  document.body.classList.add('closing');
+  await wait(1800);
+  document.body.classList.add('open'); redraw();
+  await wait(700);
+  const agony=setTimeout(()=>{ JUDGES.forEach(j=>{ if(j.verdict) return;
+      j.bubble.textContent=j.agony; setState(j,'agonize'); dots(j.line,'깊이 고뇌하는 중'); });
+    if(JUDGES.some(j=>!j.verdict)) dots($('#status'),'심사위원이 깊이 고민하고 있어요'); redraw(); }, Math.max(0,12500-(performance.now()-runStarted)));
 
-  for(const j of JUDGES){
-    j.verdict=res[j.id].verdict; setState(j,'raise1'); redraw();
-    await wait(170); setState(j,'raise2'); redraw();
-    j.mark.className='lamp '+(j.verdict==='O'?'o':'x'); j.mark.textContent=j.verdict;
-    if(LOVE) j.plate.classList.add(j.verdict==='O'?'on-o':'on-x');
-    j.line.className='line'; undots(j.line,res[j.id].line);
-    await wait(650);
+  // 끝난 순서대로 팻말을 든다 (팻말 사이는 0.8초 이상 띄워 한 명씩 보이게)
+  for(let shown=0, last=0; shown<3;){
+    if(ready.length){
+      const id=ready.shift(), j=JUDGES.find(x=>x.id===id);
+      await wait(Math.max(0,800-(performance.now()-last)));
+      j.verdict=res[j.id].verdict; setState(j,'raise1'); redraw();
+      await wait(170); setState(j,'raise2'); redraw();
+      j.mark.className='lamp '+(j.verdict==='O'?'o':'x'); j.mark.textContent=j.verdict;
+      if(LOVE) j.plate.classList.add(j.verdict==='O'?'on-o':'on-x');
+      j.line.className='line'; undots(j.line,res[j.id].line);
+      last=performance.now(); shown++; continue;
+    }
+    if(info){ const m=mock(p); JUDGES.forEach(j=>{ if(!res[j.id]){ res[j.id]=m[j.id]; ready.push(j.id); } }); if(!info.note) info.note=LOST_NOTE; continue; }
+    await new Promise(r=>{ nudge=r; });
   }
+  clearTimeout(agony);
+  while(!info) await new Promise(r=>{ nudge=r; });
+  runStarted=0;
+  const {note,jid,day:judged}=info;
+  const day=judged||sent; // 서버가 판정한 날로 기록 (자정을 넘겨 끝나도 그날)
   const o=JUDGES.filter(j=>j.verdict==='O').length, x=3-o;
   $('#so').textContent=o; $('#sx').textContent=x;
   const G2=(LOVE?{3:['ALL<br>GREEN','good'],2:['GREEN','good'],1:['RED','bad'],0:['ALL<br>RED','bad']}
@@ -1015,7 +1066,7 @@ async function run(p){
   grade.className='grade '+G2[1]; delete $('#gradeTxt').dataset.dots; $('#gradeTxt').innerHTML=G2[0];
   undots($('#status'),note||(jid?afterJudge(p,o,x,day):''));
   if(o===3) fireworks();
-  if(o===0){ JUDGES.forEach(j=>setState(j,'panic')); redraw();
+  if(o===0){ JUDGES.forEach(j=>{ j.bubble.textContent=LOVE?j.loveShout:j.shout; setState(j,'panic'); }); redraw();
     const b=$('#board'); b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
   again.disabled=false; undots(again,'다시 심사받기'); running=false;
   setResult({p, res, jid, real:!note, o, x, grade:G2[0].replace('<br>',' ')});
@@ -1051,12 +1102,12 @@ function setResult(r){
 }
 const portrait=j=>{ const i=new Image(); i.src=j.ctx.canvas.toDataURL(); i.alt=''; return i; };
 // 화면 이벤트 기록 (실패해도 화면에는 영향 없음). 판정 전에도 남기는 이벤트는 jid 없이 보낸다.
-const NO_JID=['visit','kakao_add','remind_add'];
-function track(type,who,src){
+const NO_JID=['visit','kakao_add','remind_add','wait_abandon'];
+function track(type,who,src,ms){
   const jid=shown?.jid;
   if(!jid&&!NO_JID.includes(type)) return;
   fetch(API_URL+'/event',{method:'POST',keepalive:true,headers:{'content-type':'application/json'},
-    body:JSON.stringify({type,who,jid,src,vid:VID})}).catch(()=>{});
+    body:JSON.stringify({type,who,jid,src,ms,vid:VID})}).catch(()=>{});
 }
 // 유입 경로: ?ref=share|kakao|remind 또는 utm_source. 기록한 뒤 주소에서 지워 새로고침이 다시 세지 않게 한다.
 { const u=new URL(location.href), raw=u.searchParams.get('ref')||u.searchParams.get('utm_source')||'';
