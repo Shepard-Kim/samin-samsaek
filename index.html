@@ -8,8 +8,8 @@
 <meta property="og:site_name" content="삼인삼색 운세 오디션">
 <meta property="og:title" content="삼인삼색 운세 오디션">
 <meta property="og:description" content="한국의 사주, 중국의 자미두수, 인도의 베딕 점성술 — 세 명의 심사위원이 O·X 팻말로 당신의 질문을 심사합니다.">
-<meta property="og:url" content="https://mingou0131.github.io/samin-samsaek/">
-<meta property="og:image" content="https://mingou0131.github.io/samin-samsaek/og.png">
+<meta property="og:url" content="https://shepard-kim.github.io/samin-samsaek/">
+<meta property="og:image" content="https://shepard-kim.github.io/samin-samsaek/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="팻말을 든 사주 할머니, 자미두수 도사, 베딕 구루">
@@ -1225,7 +1225,7 @@ function renderDetail(who,d){
 /* ================= 결과 공유 =================
    결과마다 고유 링크를 만든다. 링크를 메신저·SNS에 붙이면 결과 이미지가 미리보기로 함께 뜨고,
    링크를 누른 친구는 결과 카드와 "나도 심사받기" 버튼을 본다. */
-const SITE='https://mingou0131.github.io/samin-samsaek/';
+const SITE='https://shepard-kim.github.io/samin-samsaek/';
 const CAN_SHARE=!!navigator.share;
 let shareFile=null;
 $('#share').addEventListener('click',openShare);
@@ -1319,7 +1319,7 @@ async function makeOg(){
   rrect(x,30,508,1140,64,16); x.fillStyle=C.teal; x.fill(); x.lineWidth=6; x.strokeStyle=C.ink; x.stroke();
   x.font='28px "Do Hyeon"';
   JUDGES.forEach((j,i)=>{ const cx=300+i*300; rrect(x,cx-120,519,240,42,10); x.fillStyle=C.paper; x.fill(); x.lineWidth=3; x.stroke(); x.fillStyle=C.ink; x.fillText(j.name,cx,550); });
-  x.fillStyle=C.ink; x.font='28px "Do Hyeon"'; x.fillText((LOVE?'우리도 궁합 보기':'너라면 O? X?')+' → mingou0131.github.io/samin-samsaek',W/2,610);
+  x.fillStyle=C.ink; x.font='28px "Do Hyeon"'; x.fillText((LOVE?'우리도 궁합 보기':'너라면 O? X?')+' → shepard-kim.github.io/samin-samsaek',W/2,610);
   return c;
 }
 
@@ -1392,7 +1392,7 @@ async function makeCard(){
   });
 
   x.fillStyle=C.ink; x.font='30px "Do Hyeon"'; x.textAlign='center';
-  x.fillText((LOVE?'우리도 궁합 보기':'너라면 O? X?')+' → mingou0131.github.io/samin-samsaek',W/2,1292);
+  x.fillText((LOVE?'우리도 궁합 보기':'너라면 O? X?')+' → shepard-kim.github.io/samin-samsaek',W/2,1292);
   x.fillStyle=C.soft; x.font='22px "Gowun Dodum"'; x.fillText('AI가 만든 재미로 보는 운세입니다',W/2,1326);
   return c;
 }
