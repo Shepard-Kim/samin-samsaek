@@ -972,7 +972,7 @@ async function ask(p){
     if(r.status===429) return {res:mock(p),note:'심사 요청이 너무 잦아요. 1분 뒤에 다시 해 보세요. 이번 판정은 연습 판정이에요.'};
     if(!r.ok) throw new Error('HTTP '+r.status);
     const d=await r.json();
-    return {res:normalize(d),note:'',jid:d.jid};
+    return {res:normalize(d),note:'',jid:d.jid,day:ISO.test(d.day)?d.day:null};
   }catch(e){
     return {res:mock(p),note:'심사위원 연결이 잠시 끊겨 연습 판정을 보여드려요. 잠시 뒤 다시 해 보세요.'};
   }
@@ -996,8 +996,9 @@ async function run(p){
   document.body.classList.add('open'); redraw();
   scrollTo({top:0,behavior:'instant'}); // 막이 열리면 전광판부터 보이게
 
-  const day=kstToday(); // 서버가 판정한 날 (자정 직전 요청이 자정 뒤에 끝나도 그날로 기록)
-  const [{res,note,jid}] = await Promise.all([ask(p), wait(2200)]);
+  const sent=kstToday();
+  const [{res,note,jid,day:judged}] = await Promise.all([ask(p), wait(2200)]);
+  const day=judged||sent; // 서버가 판정한 날로 기록 (자정을 넘겨 끝나도 그날)
 
   for(const j of JUDGES){
     j.verdict=res[j.id].verdict; setState(j,'raise1'); redraw();
