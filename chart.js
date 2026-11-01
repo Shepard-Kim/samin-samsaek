@@ -126,6 +126,10 @@ export function buildChart(input, cand, cands){
   const yun = ecb.getYun(male ? 1 : 0);
   const daeun = yun.getDaYun(10).slice(1, 9).map(dy => ({ age: dy.getStartAge(), year: dy.getStartYear(), gz: dy.getGanZhi(), ko: ko(dy.getGanZhi()) }));
   const seun = Array.from({ length: 5 }, (_, k) => { const gz = Solar.fromYmd(thisYear + k, 7, 1).getLunar().getYearInGanZhiExact(); return { year: thisYear + k, gz, ko: ko(gz) }; });
+  // 월운: 이번 달부터 18개월. 월건은 절기(매달 4~8일 무렵)에 바뀌므로 그달 20일 기준 = "그달 초순 절기 ~ 다음 달 초순"
+  const ym = k => { const t = new Date(thisYear, today.getMonth() + k, 20); return [t.getFullYear(), t.getMonth() + 1]; };
+  const wolun = Array.from({ length: 18 }, (_, k) => { const [Y, M] = ym(k), gz = Solar.fromYmd(Y, M, 20).getLunar().getMonthInGanZhiExact();
+    return { ym: `${Y}-${pad(M)}`, gz, ko: ko(gz), ganShishen: shishen(dm, gz[0]), zhiShishen: shishen(dm, ZHI_MAIN[gz[1]]) }; });
   const yearStemYang = YANG.has(yp[0]);
   const saju = {
     pillars, dayMaster: `${GAN_KO[dm]}${GAN_WX[dm]}(${dm})`, wuxing,
@@ -133,7 +137,7 @@ export function buildChart(input, cand, cands){
     relations: relations(cand.pillars.map(p => p[1])),
     daeunDirection: (yearStemYang === male) ? '순행' : '역행',
     daeunStart: `${yun.getStartYear()}년 ${yun.getStartMonth()}개월 ${yun.getStartDay()}일 뒤`,
-    daeun, seun, lunar: (L => `${L.getYear()}년 ${L.getMonth()<0?"윤":""}${Math.abs(L.getMonth())}월 ${L.getDay()}일`)(toSolar(wall(utc + 9*3600e3)).getLunar()),
+    daeun, seun, wolun, lunar: (L => `${L.getYear()}년 ${L.getMonth()<0?"윤":""}${Math.abs(L.getMonth())}월 ${L.getDay()}일`)(toSolar(wall(utc + 9*3600e3)).getLunar()),
   };
 
   // 자미두수 (iztro): 시진 인덱스 자0 축1 … 해11, 만자12
@@ -149,12 +153,17 @@ export function buildChart(input, cand, cands){
   }));
   const hz = a.horoscope(`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`);
   const yearly = Array.from({ length: 5 }, (_, k) => { const hy = a.horoscope(`${thisYear+k}-7-1`).yearly; return { year: thisYear + k, gz: hy.heavenlyStem + hy.earthlyBranch, palace: a.palaces[hy.index]?.name, mutagen: hy.mutagen }; });
+  // 유월(流月): 이번 달부터 12개월, 그달 15일 기준으로 어느 궁이 움직이고 사화가 어디로 가는지
+  // iztro가 유월 사화만 한자로 돌려주므로 한글 별 이름으로 바꾼다
+  const STAR_KO = { 紫微:'자미',天机:'천기',太阳:'태양',武曲:'무곡',天同:'천동',廉贞:'염정',天府:'천부',太阴:'태음',贪狼:'탐랑',巨门:'거문',天相:'천상',天梁:'천량',七杀:'칠살',破军:'파군',文昌:'문창',文曲:'문곡',左辅:'좌보',右弼:'우필' };
+  const monthly = Array.from({ length: 12 }, (_, k) => { const [Y, M] = ym(k), hm = a.horoscope(`${Y}-${M}-15`).monthly;
+    return { ym: `${Y}-${pad(M)}`, palace: a.palaces[hm.index]?.name, mutagen: hm.mutagen.map(s => STAR_KO[s] || s) }; });
   const cd = a.chineseDate.split(' ');
   const verify = { year: cd[0] === pillars[0].ko, day: cd[2] === pillars[2].ko, hour: cd[3] === pillars[3].ko, monthNote: `자미두수는 음력 달로 ${cd[1]}월, 사주는 절기로 ${pillars[1].ko}월` };
   const jami = {
     soulStar: a.soul, bodyStar: a.body, fiveElements: a.fiveElementsClass, lunar: a.lunarDate, palaces,
     currentDecadal: { palace: a.palaces[hz.decadal.index]?.name, gz: hz.decadal.heavenlyStem + hz.decadal.earthlyBranch, mutagen: hz.decadal.mutagen },
-    yearly, verify,
+    yearly, monthly, verify,
   };
 
   // 베딕 (Lahiri, 사이더리얼, 홀사인 하우스)

@@ -279,6 +279,9 @@ button,input,textarea{font:inherit;color:inherit}
 .cards{display:grid;gap:8px;margin:0 0 10px}
 .card2{border-left:5px solid var(--gold);background:#faf7f0;border-radius:0 12px 12px 0;padding:10px 12px}
 .card2 b{display:block;color:var(--theme);margin-bottom:2px}
+.tipbox{border:2px solid var(--theme);border-radius:12px;padding:8px 12px;margin:0 0 10px;background:#fff}
+.tipbox b{color:var(--theme)} .tipbox ul{margin:4px 0 0;padding-left:18px} .tipbox li{margin:2px 0}
+.tipbox.avoid{border-color:#c0583e} .tipbox.avoid b{color:#a43d26}
 .cmp{border:2px solid var(--theme);border-radius:12px;overflow:hidden;margin:0 0 10px}
 .cmp h3{margin:0;padding:6px 10px;background:var(--theme);color:#fff;font-size:15px}
 .cmp p{margin:0;padding:6px 10px;border-top:1px solid rgba(43,33,64,.12);font-size:14px}
@@ -302,7 +305,7 @@ button,input,textarea{font:inherit;color:inherit}
   .doc section,.year{border-radius:0;border-width:0 0 1px;padding:4mm 0;break-inside:auto}
   .cover{break-after:page;min-height:150mm;align-content:center}
   .year{break-before:page;break-inside:avoid;border:0}
-  .card2,.pillar,.cmp,.rows li,.quote,.bar{break-inside:avoid}
+  .card2,.tipbox,.pillar,.cmp,.rows li,.quote,.bar{break-inside:avoid}
   .tactions{display:none!important}
 }
 .foot{font-size:13px;color:var(--ink-soft);text-align:center;margin:0}
@@ -1559,7 +1562,7 @@ $('#totalOpen').addEventListener('click',()=>{
 $('#totalClose').addEventListener('click',()=>closeLayer($('#totalBox')));
 addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#totalBox').hidden) closeLayer($('#totalBox')); });
 
-function loadChartLib(){ return chartLib ??= import('./chart.js?v=2').then(m=>{ fillPlaces(m.PLACES); return m; }); }
+function loadChartLib(){ return chartLib ??= import('./chart.js?v=3').then(m=>{ fillPlaces(m.PLACES); return m; }); }
 function fillPlaces(list){
   const sel=$('#tPlace'); if(sel.options.length) return;
   list.forEach(([n,lat,lon])=>sel.append(new Option(n,JSON.stringify([n,lat,lon]))));
@@ -1611,7 +1614,7 @@ function showBasis(){
   }
   const btn=el('button','btn go','세 심사위원에게 풀이 받기'); btn.type='button';
   btn.onclick=()=>{ const i=c.ask?+document.querySelector('input[name=tBasis]:checked').value:0; requestTotal(c.list[i]); };
-  box.append(btn, el('p','notice','풀이는 1분쯤 걸려요. 창을 닫지 말고 기다려 주세요.'));
+  box.append(btn, el('p','notice','풀이는 1~2분쯤 걸려요. 창을 닫지 말고 기다려 주세요.'));
   $('#totalForm').hidden=true; tBody().replaceChildren(box);
   const back=el('button','btn small ghost','입력 다시 하기'); back.type='button'; back.onclick=()=>{ $('#totalForm').hidden=false; tBody().replaceChildren(); };
   tBody().append(back);
@@ -1624,7 +1627,7 @@ async function requestTotal(cand){
   const steps=[['saju','사주 할머니가 여덟 글자를 읽는 중'],['jami','자미두수 도사가 명반을 펼치는 중'],['vedic','베딕 구루가 행성 차트를 보는 중'],['synth','세 해석을 한 권으로 엮는 중']];
   const box=el('div','tbox'), ul=el('ul','steps'), li={};
   steps.forEach(([k,t])=>{ li[k]=el('li','doing',t); ul.append(li[k]); }); li.synth.className='';
-  box.append(waitBox(JUDGES,'세 심사위원이 총운을 쓰는 중','1분쯤 걸려요.'),ul);
+  box.append(waitBox(JUDGES,'세 심사위원이 총운을 쓰는 중','1~2분쯤 걸려요. 결론을 길고 자세하게 쓰는 중이에요.'),ul);
   tBody().replaceChildren(box);
   const got={};
   try{
@@ -1735,9 +1738,16 @@ function renderDoc(chart,R){
 
   // 05 결론
   const s5=sec('05','결론');
-  h3(s5,'총운'); para(s5,Y.conclusion.overall);
-  h3(s5,'연애'); para(s5,Y.conclusion.love);
-  h3(s5,'직업'); para(s5,Y.conclusion.career);
+  // 항목마다 본문 + 가장 좋은 때 / 가장 가까운 기회 / 이렇게 하세요 / 피하세요 (예전 저장분은 글 한 덩어리)
+  const tips=(s,title,items,cls)=>{ if(!items?.length) return; const b=el('div','tipbox'+(cls?' '+cls:'')); b.append(el('b',null,title)); const u=el('ul'); items.forEach(t=>u.append(el('li',null,t))); b.append(u); s.append(b); };
+  [['overall','총운'],['love','연애·결혼'],['career','직장·승진·이직'],['business','사업·재물']].forEach(([k,t])=>{
+    const c=Y.conclusion[k]; if(!c) return;
+    h3(s5,t);
+    if(typeof c==='string'){ para(s5,c); return; }
+    para(s5,c.text);
+    cards(s5,[['가장 좋은 때',c.best],['가장 가까운 기회',c.next]]);
+    tips(s5,'이렇게 하세요',c.tips); tips(s5,'피하세요',c.avoid,'avoid');
+  });
 
   // 06 5년
   const s6=sec('06','앞으로 5년');
@@ -1780,7 +1790,7 @@ async function savePdf(btn){
       margin:[9,8,11,8], filename:`${tResult.chart.person.name}_종합리딩_모바일.pdf`,
       image:{type:'jpeg',quality:0.92}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},
       jsPDF:{unit:'mm',format:[100,178],orientation:'portrait'},
-      pagebreak:{mode:['css'],avoid:['.card2','.pillar','.cmp','.rows li','.quote','.bar','.year'],before:['.year','.doc > section:not(.cover)']},
+      pagebreak:{mode:['css'],avoid:['.card2','.tipbox','.pillar','.cmp','.rows li','.quote','.bar','.year'],before:['.year','.doc > section:not(.cover)']},
     }).from(doc).save();
     doc.classList.remove('pdf');
     btn.disabled=false; undots(btn,label);
